@@ -1,0 +1,60 @@
+/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+body[b-w33qwxqxyz] {
+  background-image: url('../Images/Background.png');
+  /* Other background properties (optional) */
+  background-size: cover; /* To cover the entire screen */
+  background-repeat: no-repeat; /* To prevent image repetition */
+  background-position: center; /* To center the image */
+}
+
+/* Style the navigation bar */
+.icon-bar[b-w33qwxqxyz] {
+  background-color: rgb(28, 98, 162); /* Semi-transparent black background */
+  overflow: hidden;
+  display: flex;
+  height: 5rem; /* Matches the height defined by `h-5` */
+  padding: 0 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.icon-bar a[b-w33qwxqxyz] {
+  color: white;
+  padding: 14px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-size: 25px;
+  border-radius: 10px;
+}
+
+
+.icon-bar a:hover[b-w33qwxqxyz] {
+  background-color: #45a049;
+  transform: scale(1.1); /* Slightly increase size on hover */
+}
+
+.icon-bar a.active[b-w33qwxqxyz] {
+  color: white;
+}
+
+html[b-w33qwxqxyz]{
+  max-width: 100%;
+  
+}
+ .fa-label[b-w33qwxqxyz] {
+  font-family: Verdana;
+  font-weight: 900;;
+
+}
+
+/* Responsive design: Making the icon bar more responsive */
+@media (max-width: 768px) {
+  .icon-bar a[b-w33qwxqxyz] {
+      
+      padding: 10px 12px;
+  }
+}

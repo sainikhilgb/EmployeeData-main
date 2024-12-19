@@ -1,0 +1,204 @@
+@page
+@using EmployeeData.Models
+@model EmployeeData.Pages.EmployeeList.EmployeeList
+@{
+    ViewData["Title"] =  "Employee List" ;
+}
+<!-- Search Form -->
+<form method="get" class="search-form row">
+<div class=" row">
+<div class=" m-4">
+    <h2 class="section-header">Employee Details</h2>
+</div>
+    <div class="form-group col-4">
+        <label for="SearchTerm">Search:</label>
+        <input type="text" id="SearchTerm" name="SearchTerm" class="form-group" value="@Model.SearchTerm" placeholder="Enter search term" />
+    </div>
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-warning">@Model.Message</div>
+}
+    <button id="search-btn"type="submit" class="btn btn-primary col-4">Search</button>
+</form>
+</div>
+
+<!-- Display No Results Found Message if Employees List is Empty -->
+@if (Model.Employees.Count == 0 && !string.IsNullOrEmpty(Model.SearchTerm))
+{
+    <p class="text-danger">No employee data is available for the provided Employee ID, or the ID is invalid.</p>
+}
+<!-- Employee Table -->
+<div class="scrollable row">
+<table class="table table-striped table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <th>Employee Id</th>
+            <th>GGID</th>
+            <th>Resource</th>
+            <th>Email</th>
+            <th>Gender</th>
+            <th>Date Of Hire</th>
+            <th>Grade</th>
+            <th>Global Grade</th>
+            <th>BU</th>
+            <th>Is Active In Project</th>
+            <th>Overall Experience</th>
+            <th>Skills</th>
+            <th>Certificates</th>
+            <th>Altria  Start date</th>
+            <th>Altria  End date</th>
+            <th>BGV Status</th>
+            <th>BGV Completion Date</th>
+            <th>VISA Availability</th>
+            <th>VISA Type</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Employees != null)
+            {
+                @foreach (var employee in Model.Employees)
+                {
+                    <tr>
+                        <td>@employee.EmpId</td>
+                        <td>@employee.GGID</td>
+                        <td>@employee.Resource</td>
+                        <td>@employee.Email</td>
+                        <td>@employee.Gender</td>
+                        <td>@employee.DateOfHire.ToString("dd-MM-yyy")</td>
+                        <td>@employee.Grade</td>
+                        <td>@employee.GlobalGrade</td>
+                        <td>@employee.BU</td>
+                        <td>@employee.IsActiveInProject</td>
+                        <td>@employee.OverallExp</td>
+                        <td>@employee.Skills</td>
+                        <td>@employee.Certificates</td>
+                        <td>@employee.AltriaStartdate.ToString("dd-MM-yyy")</td>
+                        <td>@employee.AltriaEnddate.ToString("dd-MM-yyy")</td>
+                        <td>@employee.BGVStatus</td>
+                        <td>@employee.BGVCompletionDate.ToString("dd-MM-yyy")</td>
+                        <td>@employee.VISAStatus</td>
+                         <td>@employee.VISAType</td>
+                        <td>
+                        <form method="get" asp-page="/Registration/Registration" asp-route-empId="@employee.EmpId" style="display:inline;" >
+                                <button type="submit" class="btn btn-primary" >Edit</button>
+                        </form>
+                        <form method="post" asp-page-handler="Delete" asp-route-empId="@employee.EmpId" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this employee?')">Delete</button>
+                        </form>
+                        </td>
+                    </tr>
+                }
+            }else
+            {
+                <tr>
+                    <td  class="text-center">No employee details available.</td>
+                </tr>
+            }
+    </tbody>
+</table>
+<a id="register" href="/Registration/Registration"><i class="fa fa-user-plus" aria-hidden="true"> Register</i></a>
+</div>
+
+
+
+<div class="scrollable row ">
+    <h2 class="section-header">Project Details</h2>
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Project Code
+                </th>
+                <th>Project Name</th>
+                <th>PO Number</th>
+                <th>POD Name</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Location</th>
+                <th>Off shore City</th>
+                <th>Off shore Backup</th>
+                <th>Altria POD Owner</th>
+                <th>ALCS Director</th>
+                <th>Type</th>
+                <th>Tower</th>
+                <th>ABLGBL</th>
+                <th>TL Name</th>
+                <th>Transition</th>
+                <th>COR</th>
+                <th>Group</th>
+                <th>Role in POD</th>
+                <th>Monthly Price</th> 
+                <th>January</th>
+                <th>February</th>
+                <th>March</th>
+                <th>April</th>
+                <th>May</th>
+                <th>June</th>
+                <th>July</th>
+                <th>August</th>
+                <th>September</th>
+                <th>October</th>
+                <th>November</th>
+                <th>December</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (Model.Employees != null )
+            {
+                @foreach (var employee in Model.Employees)
+                {
+                    <tr>
+                        <td>@employee.ProjectCode</td>
+                        <td>@employee.ProjectName</td>
+                        <td>@employee.PONumber</td>
+                        <td>@employee.PODName</td>
+                        <td>@employee.StartDate.ToString("dd-MM-yyy")</td>
+                        <td>@employee.EndDate.ToString("dd-MM-yyy")</td>
+                        <td>@employee.Location</td>
+                        <td>@employee.OffshoreCity</td>
+                        <td>@employee.OffshoreBackup</td>
+                        <td>@employee.AltriaPODOwner</td>
+                        <td>@employee.ALCSDirector</td>
+                        <td>@employee.Type</td>
+                        <td>@employee.Tower</td>
+                        <td>@employee.ABLGBL</td>
+                        <td>@employee.TLName</td>
+                        <td>@employee.Transition</td>
+                        <td>@employee.COR</td>
+                        <td>@employee.Group</td>
+                        <td>@employee.RoleinPOD</td>
+                        <td>@employee.MonthlyPrice</td>
+                        <td>@employee.January</td>
+                        <td>@employee.February</td>
+                        <td>@employee.March</td>
+                        <td>@employee.April</td>
+                        <td>@employee.May</td>
+                        <td>@employee.June</td>
+                        <td>@employee.July</td>
+                        <td>@employee.August</td>
+                        <td>@employee.September</td>
+                        <td>@employee.October</td>
+                        <td>@employee.November</td>
+                        <td>@employee.December</td> 
+                        <td>
+                         <form method="get" asp-page="/Registration/Registration" asp-route-empId="@employee.EmpId" style="display:inline;">
+                                <button type="submit" class="btn btn-primary" >Edit</button>
+                        </form> 
+                            <form method="post" asp-page-handler="ProjectDelete" asp-route-projectCode="@employee.ProjectCode" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this Project details?')">Delete</button>
+                        </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td class="text-center">No project details available.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

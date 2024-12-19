@@ -1,0 +1,249 @@
+body {
+    font-family: Verdana;
+    margin: 0;
+    padding: 0;
+    
+}
+
+html {
+    font-family: Verdana;
+    margin: 0;
+    padding: 0;
+    background-image: url('../Images/Background.png');
+    /* Other background properties (optional) */
+    background-size: cover; /* To cover the entire screen */
+    background-repeat: no-repeat; /* To prevent image repetition */
+    background-position: center; /* To center the image */
+    height: 100%;
+    
+}
+
+
+main{
+    font-family: Verdana;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 100%;
+    margin-left: auto;
+    
+    border-radius: 5px;
+    background-color: #fff; /* White container background */
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.87); /* Subtle shadow */
+    box-sizing: content-box;
+    height: 100%;
+   
+  }
+ 
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.input-box, .form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+input[type="text"], 
+input[type="number"], 
+input[type="date"], 
+select, 
+.form-control {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: rgb(28, 98, 162);
+}
+
+.date-field {
+    color: #333;
+}
+
+/* Radio buttons */
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+.text-danger {
+    color: red;
+    font-size: 12px;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.btn-danger {
+    border-radius: 10px; /* Rounds the edges */   
+}
+
+.btn-primary {
+    background-color: rgb(28, 98, 162);
+    color: #fff;
+    border-radius: 10px; /* Rounds the edges */
+}
+.btn-danger:hover{
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+
+.btn-primary:hover {
+    background-color: #45a049;
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+
+.btn-secondary {
+    background-color: rgb(28, 98, 162);
+    color: #fff;
+    border-radius: 10px; /* Rounds the edges */
+}
+
+.btn-secondary:hover {
+    background-color: #45a049;
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+.alert-warning{
+    background-color: rgb(237, 194, 41);
+    color: brown;
+    border-radius: 10px; /* Rounds the edges */
+}
+
+
+/* Table styling */
+.scrollable{
+    overflow-x: auto
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    text-align: center;
+}
+.table-responsive {
+    overflow-x: auto; 
+    max-height: 500px; /* Adjust as needed */
+}
+
+.table thead  {
+    background-color: rgb(28, 98, 162);
+    color: #fff;
+    font-weight: bold;
+    
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+ th{
+    background-color: rgb(28, 98, 162);
+    color: #fff;
+    font-weight: bold;
+    justify-content: center;
+    height: 20px;
+  
+}
+
+.table tbody td {
+    text-align: center;
+    
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+   
+}
+
+.table tbody input[type="number"] {
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+}
+form .search-form{
+    margin-left: 0;
+}
+  .redirect-button {
+    background-color: rgb(28, 98, 162); /* Primary button color */
+    color: #fff; /* Text color */
+    border: none; /* Removes border */
+    padding: 10px 20px; /* Adds padding to the button */
+    border-radius: 10px; /* Rounds the edges */
+    cursor: pointer; /* Changes cursor to pointer on hover */
+    transition: background-color 0.3s ease; /* Adds a hover effect */
+    border-radius: 10px; /* Rounded corners */
+}
+
+.redirect-button:hover {
+    background-color: #45a049;
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+
+.ml-20 {
+    margin-left: 50px; /* Applies a 20px margin to the left */
+}
+.mb-4 {
+    display: flex; /* Use flexbox for positioning */
+    justify-content: center; /* Horizontally center the content */
+    align-items: center; /* Vertically center the content */
+    
+}
+#search-btn{
+    
+    height: 50px;
+    width: 20%;
+    border-radius: 10px; /* Rounded corners */
+}
+ #search-btn:hover {
+   
+    background-color: #45a049;
+    transform: scale(1.1); /* Slightly increase size on hover */
+ }
+ #register {
+    background-color: rgb(28, 98, 162);
+    color: white;
+    padding: 20px 40px; /* Increased padding for larger button */
+    font-size: 20px; /* Increased font size */
+    border-radius: 10px; /* Rounded corners */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+ #register:hover {
+    background-color: #45a049;
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+h2{
+    background-color: rgb(28, 98, 162);
+    font-family: Verdana,Bold;
+    font-size: xx-large;
+    margin: auto;
+    color: white;
+    text-align: center;
+    padding-block: 10px;
+   
+
+}
+/* Responsive design */
+@media (max-width: 768px) {
+    .input-box {
+        width: 100%;
+    }
+}

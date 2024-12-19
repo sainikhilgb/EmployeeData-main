@@ -1,0 +1,314 @@
+@page  "{empId?}"
+@model EmployeeData.Pages.Registration.Registration
+@{
+    ViewData["Title"] = string.IsNullOrEmpty(Model.Employee.EmpId) ? "Register New Employee" : "Edit Employee";
+
+}
+
+<div class="overflow-auto">
+<div class="container m-4">
+    
+        <h2 class="section-header">@(string.IsNullOrEmpty(Model.Employee.EmpId) ? "Register New Employee" : "Edit Employee")</h2>
+    
+</div>
+    <form method="post">
+        <h2 class="section-header">Employee Details</h2>
+    <div class="container row">
+    
+    <div class="input-box  col-3">
+        <label for="EmpId">Employee ID</label>
+        <input type="text"  id="EmpId" name="Employee.EmpId" class="form-control" value="@Model.Employee.EmpId" />
+    </div>
+    <div class="input-box col-3">
+        <label for="GGID">GGID </label>
+        <input type="number"  id="GGID" name="Employee.GGID" class="form-control" value="@Model.Employee.GGID" />
+    </div>
+    <div class="input-box col-3">
+        <label for="Resource">Resource</label>
+        <input asp-for="Employee.Resource" class="form-control" />
+        <span asp-validation-for="Employee.Resource" class="text-danger"></span>
+    </div>
+
+    <div class="input-box col-3">
+        <label for="Email">Email</label>
+        <input asp-for="Employee.Email" class="form-control" />
+        <span asp-validation-for="Employee.Email" class="text-danger"></span>
+    </div>
+
+    <div class="input-box col-3">
+        <label for="Grade">Grade</label>
+        <select asp-for="Employee.Grade" asp-items="Model.GradeOptions" class="form-control" onchange="fetchGlobalGrade(this.value)">
+            <option value="">-- Select Grade --</option>
+        </select>
+        <span asp-validation-for="Employee.Grade" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="GlobalGrade">Global Grade</label>
+        <input type="text" id="GlobalGrade" name="Employee.GlobalGrade" class="form-control" readonly />
+    </div>
+    <div class="input-box col-3">
+        <label for="BU">Business Unit</label>
+        <select asp-for="Employee.BU" asp-items="Model.BUOptions" class="form-control">
+            <option value="">-- Select BU --</option>
+        </select>
+        <span asp-validation-for="Employee.BU" class="text-danger"></span>
+    </div>
+    
+
+     <div class="input-box col-3">
+        <label for="Gender">Gender</label>
+        <select asp-for="Employee.Gender" class="form-control">
+            <option value="">-- Select Gender --</option>
+            <option value="Male"> Male </option>
+            <option value="Female"> Female </option>
+        </select>
+        <span asp-validation-for="Employee.Gender" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="DateOfHire">Date of Hire</label>
+        <input asp-for="Employee.DateOfHire" type="date" onload="getDate()" class="form-control date-field"/>
+        <span asp-validation-for="Employee.DateOfHire" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+            <label for="OverallExp">Overall EXP</label>
+            <input asp-for="Employee.OverallExp" type="number" step="0.01" class="form-control"/>
+            <span asp-validation-for="Employee.OverallExp" class="text-danger"></span>
+    </div>
+
+        <div class="input-box col-3">
+            <label for="Skills">Skills</label>
+            <input asp-for="Employee.Skills" type="text" class="form-control"/>
+            <span asp-validation-for="Employee.Skills" class="text-danger"></span>
+        </div>
+
+        <div class="input-box col-3">
+            <label for="Certificates">Certificates</label>
+             <select id="Certificates" asp-for="Employee.Certificates" asp-items="Model.CertificationOptions" class="form-control" onchange="toggleOtherTextbox()">
+            <option value="">--Select Certificates --</option>
+            </select>
+            <span asp-validation-for="Employee.Certificates" class="text-danger"></span>
+        </div>
+        <div class="input-box col-3" id="OtherCertificate" style="display:none;">
+            <label >Specify Other Certificate</label>
+            <input asp-for="Employee.OtherCertificate" type="text" id="OtherCertificate" class="form-control" placeholder="Enter other certificate" />
+        </div>
+        <div class="input-box col-3">
+        <label for="AltriaStartdate">Altria Start date</label>
+        <input asp-for="Employee.AltriaStartdate" type="date" onload="getDate()" class="form-control date-field"/>
+        <span asp-validation-for="Employee.AltriaStartdate" class="text-danger"></span>
+     </div>
+     
+     
+     <div class="input-box col-3">
+        <label for="AltriaEnddate">Altria End date</label>
+        <input asp-for="Employee.AltriaEnddate" type="date" onload="getDate()" class="form-control date-field"/>
+        <span asp-validation-for="Employee.AltriaEnddate" class="text-danger"></span>
+     </div>
+        
+        <div class="form-group col-3">
+        <label>Active in Project:</label>
+        
+            <input type="radio" id="activeYes" name="Employee.IsActiveInProject" value="Yes" asp-for="Employee.IsActiveInProject" />
+            <label  for="activeYes">Yes</label>
+        
+            <input type="radio" id="activeNo" name="Employee.IsActiveInProject" value="No" asp-for="Employee.IsActiveInProject" />
+            <label for="activeNo">No</label>
+        
+        <span asp-validation-for="Employee.IsActiveInProject" class="text-danger"></span>
+        
+    </div>
+    <div class="input-box col-3">
+        <label for="BGV">BGV Status</label>
+        <select asp-for="Employee.BGVStatus" asp-items="Model.BGVOptions" class="form-control">
+            <option value="">--Select BGV Status --</option>
+        </select>
+        <span asp-validation-for="Employee.BGVStatus" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="BGVCompletionDate">BGV Completion Date</label>
+        <input asp-for="Employee.BGVCompletionDate" type="date" onload="getDate()" class="form-control date-field"/>
+        <span asp-validation-for="Employee.BGVCompletionDate" class="text-danger"></span>
+     </div>
+     <div class="input-box col-3">
+        <label for="VISAStatus">VISA Status</label>
+        <select asp-for="Employee.VISAStatus" class="form-control">
+            <option value="">--Select VISA Status --</option>
+            <option value="Yes"> Yes </option>
+            <option value="No"> No </option>
+        </select>
+        <span asp-validation-for="Employee.VISAStatus" class="text-danger"></span>
+     </div>
+     <div class="input-box col-3">
+        <label for="VISAType">VISA Type</label>
+        <select asp-for="Employee.VISAType" class="form-control"asp-items="Model.VISATypeOptions">
+            <option value="">--Select VISA Type --</option>
+        </select>
+        <span asp-validation-for="Employee.VISAType" class="text-danger"></span>
+     </div>
+    </div>
+    <div class="container row">
+<div>
+    <h2 class="section-header">Project Details</h2>
+</div>
+    <div class="input-box col-3">
+        <label for="ProjectCode">Project Code</label>
+        <select id="ProjectCode" name="Employee.ProjectCode" asp-for="Employee.ProjectCode" asp-items="Model.ProjectCodeOptions" onchange="fetchProjectName(this.value)" class="form-control">
+            <option value="">-- Select Project Code --</option>
+        </select>
+        <span asp-validation-for="Employee.ProjectCode" class="text-danger"></span>
+     </div>
+    <div class="input-box col-3">
+         <label for="ProjectName">Project Name</label>
+         <input type="text" id="ProjectName" name="Employee.ProjectName" class="form-control" readonly />
+                        
+    </div>
+
+    <div class="input-box col-3">
+        <label for="PONumber">PO Number</label>
+        <input type="number" id="PONumber" name="Employee.PONumber" class="form-control" />
+    </div>
+    <div class="input-box col-3">
+        <label for="PODName">POD Name</label>
+        <select id="PODName" asp-for="Employee.PODName" name="Employee.PODName"class="form-control">
+            <option value="">-- Select POD Name --</option>
+        </select>
+        <span asp-validation-for="Employee.PODName" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="StartDate">Start Date</label>
+        <input asp-for="Employee.StartDate" type="date" class="form-control date-field" />
+        <span asp-validation-for="Employee.StartDate" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="EndDate">End Date</label>
+        <input asp-for="Employee.EndDate" type="date" class="form-control date-field" />
+        <span asp-validation-for="Employee.EndDate" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="location">location</label>
+        <select id="location" asp-for="Employee.Location" class="form-control">
+            <option value="onshore">onshore</option>
+            <option value="offshore">offshore</option>
+        </select>
+    </div>
+    <div class="input-box col-3">
+        <label for="offshorecity">offshore city</label>
+        <select id="offshore-city" asp-for="Employee.OffshoreCity" asp-items="Model.OffShoreCityOptions" class=" form-control">
+            <option value="">-- Select City --</option>
+        </select>
+    </div>
+    <div class="input-box col-3">
+        <label for="OffshoreBackup">Offshore Backup</label>
+        <input asp-for="Employee.OffshoreBackup" class="form-control" />
+        <span asp-validation-for="Employee.OffshoreBackup" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="AltriaPODOwner">Altria POD Owner</label>
+        <input asp-for="Employee.AltriaPODOwner" class="form-control" />
+        <span asp-validation-for="Employee.AltriaPODOwner" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="ALCSDirector">ALCS Director</label>
+        <input asp-for="Employee.ALCSDirector" class="form-control" />
+        <span asp-validation-for="Employee.ALCSDirector" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="Type">Type</label>
+        <select asp-for="Employee.Type" asp-items="Model.TypeOptions" class="form-control">
+            <option value="">-- Select Type --</option>
+        </select>
+        <span asp-validation-for="Employee.Type" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="Type">Tower</label>
+        <select asp-for="Employee.Tower" asp-items="Model.TowerOptions" class="form-control">
+            <option value="">-- Select Tower --</option>
+        </select>
+        <span asp-validation-for="Employee.Tower" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="ABLGBL">ABL GBL</label>
+        <select asp-for="Employee.ABLGBL" class="form-control">
+            <option value="">-- Select ABLGBL --</option>
+            <option value="ABL"> ABL </option>
+            <option value="GBL"> GBL </option>
+        </select>
+    </div>
+    <div class="input-box col-3">
+        <label for="TLName">TL Name</label>
+        <input asp-for="Employee.TLName" class="form-control" />
+        <span asp-validation-for="Employee.TLName" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="Transition">Transition</label>
+        <input asp-for="Employee.Transition" class="form-control" />
+        <span asp-validation-for="Employee.Transition" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="COR">COR</label>
+        <input asp-for="Employee.COR" type="text" class="form-control" />
+        <span asp-validation-for="Employee.COR" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="Group">Group</label>
+        <input asp-for="Employee.Group" type="text" class="form-control" />
+        <span asp-validation-for="Employee.Group" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="RoleinPOD">Role in POD</label>
+        <input asp-for="Employee.RoleinPOD" type="text" class="form-control" />
+        <span asp-validation-for="Employee.RoleinPOD" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="MonthlyPrice">Monthly Price</label>
+        <input asp-for="Employee.MonthlyPrice" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="Employee.MonthlyPrice" class="text-danger"></span>
+    </div>
+    <div class="input-box col-3">
+        <label for="AltriaEXP">Altria EXP</label>
+        <input asp-for="Employee.AltriaEXP" type="number" step="0.01" class="form-control" />
+        <span asp-validation-for="Employee.AltriaEXP" class="text-danger"></span>
+    </div>
+    <div class="table-responsive">
+         <table class="table custom-table">
+                        <thead>
+                            <tr>
+                                <th>Jan</th>
+                                <th>Feb</th>
+                                <th>Mar</th>
+                                <th>April</th>
+                                <th>May</th>
+                                <th>June</th>
+                                <th>July</th>
+                                <th>Aug</th>
+                                <th>Sep</th>
+                                <th>Oct</th>
+                                <th>Nov</th>
+                                <th>Dec</th>
+                            </tr>
+                        </thead>
+                            <tbody>
+                                    <tr>
+                                        <td><input asp-for="Employee.January" type="number" step="0.1" /></td>
+                                        <td><input asp-for="Employee.February" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.March" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.April" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.May" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.June" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.July" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.August" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.September" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.October" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.November" type="number" step="0.1"/></td>
+                                        <td><input asp-for="Employee.December" type="number" step="0.1"/></td>
+                                    </tr>
+                            </tbody>
+        </table>
+      </div>
+
+    <button type="submit" class="btn btn-primary">@ViewData["Title"]</button>
+
+    <a asp-page="/EmployeeList/EmployeeList" class="btn btn-secondary">Back to List</a>
+</form>
+</div> 
+</div
