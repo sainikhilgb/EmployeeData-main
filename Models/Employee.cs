@@ -5,6 +5,7 @@ namespace EmployeeData.Models
 {
     public class Employee 
     {
+        
         [Key]
         [Required(ErrorMessage = "Please enter EmployeeId")]
         public string EmpId {get; set;}
@@ -37,7 +38,6 @@ namespace EmployeeData.Models
         public decimal OverallExp {get; set;}
         public string Skills {get; set;}
         public string Certificates {get; set;}
-    
         public string? OtherCertificate {get; set;}
 
         [Required(ErrorMessage = "Please enter the Altria Start date")]
@@ -85,7 +85,8 @@ namespace EmployeeData.Models
         public string Tower {get;set;}
         [Required(ErrorMessage = "Please Select the ABL or GBL")]
         public string? ABLGBL {get;set;}
-        [Required(ErrorMessage = "Please Select the POD name")]
+        [Required(ErrorMessage = "Please enter your TL name")]
+        [StringLength(50)]
         public string TLName {get;set;}
 
         [Required(ErrorMessage = "Please select Onshore or Offshore")]
@@ -108,32 +109,34 @@ namespace EmployeeData.Models
         [DataType(DataType.Date)]
         [DisplayName("End date")]
          public DateTime EndDate {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal January {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal February {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal March {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal April {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal May {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal June {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal July {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal August {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal September {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal October {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal November {get; set;}
-         [Range(0,1,ErrorMessage ="Value Should be in between 0-1")]
-         public decimal December {get; set;}
 
-         public string COR {get; set;}
+         public string bulk {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string January {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string February {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string March {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string April {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string May {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string June {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string July {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string August {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string September {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string October {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string November {get; set;}
+         [Required(ErrorMessage = "Please select the monthly hours")]
+         public string December {get; set;}
+
+         public decimal COR {get; set;}
 
          public string Group {get; set;}
          [DisplayName("Monthly Price")]
@@ -142,7 +145,18 @@ namespace EmployeeData.Models
         [DisplayName("Role in POD")]
         public string RoleinPOD {get; set;}
 
-
+         public string JanFin { get; set; }
+        public string FebFin { get;set;}
+        public string MarFin { get; set; }
+        public string AprFin { get; set; }
+        public string MayFin { get; set; }
+        public string JuneFin { get; set; }
+        public string JulyFin { get; set; }
+        public string AugFin { get; set; }
+        public string SepFin { get; set; }
+        public string OctFin { get; set; }
+        public string NovFin { get; set; }
+         public string DecFin { get; set;}
 
        
         

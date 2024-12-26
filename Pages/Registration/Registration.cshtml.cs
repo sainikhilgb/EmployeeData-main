@@ -10,13 +10,13 @@ namespace EmployeeData.Pages.Registration
     public class Registration : PageModel
     {
         private string employeeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeData.xlsx");
-        
+
 
         [BindProperty]
         public Employee Employee { get; set; } = new Employee();
 
         public List<SelectListItem> GradeOptions { get; set; }
-         public List<SelectListItem> GlobalGradeOptions { get; set; }
+        public List<SelectListItem> GlobalGradeOptions { get; set; }
         public List<SelectListItem> BUOptions { get; set; }
         public List<SelectListItem> BGVOptions { get; set; }
         public List<SelectListItem> ProjectCodeOptions { get; set; }
@@ -26,22 +26,23 @@ namespace EmployeeData.Pages.Registration
         public List<SelectListItem> TypeOptions { get; set; }
         public List<SelectListItem> TowerOptions { get; set; }
         public List<SelectListItem> CertificationOptions { get; set; }
-         public List<SelectListItem> VISATypeOptions { get; set; }
+        public List<SelectListItem> VISATypeOptions { get; set; }
+        public List<SelectListItem> bulkOptions { get; set; }
 
         private Dictionary<string, string> projectCodeToNameMapping = new Dictionary<string, string>();
 
         private Dictionary<string, string> GradeToGlobalGrade = new Dictionary<string, string>();
-         private Dictionary<string, List<string>> ProjectCodeToPODMapping { get; set; } = new Dictionary<string, List<string>>();
+        private Dictionary<string, List<string>> ProjectCodeToPODMapping { get; set; } = new Dictionary<string, List<string>>();
 
 
-                 
+
         // OnGet to load dropdown options and initialize the form
         public IActionResult OnGet(string empId)
         {
+
             // Load dropdown options from the dropdown file
             LoadDropdownOptions();
-             LoadProjectCodeToPODMapping();
-
+            LoadProjectCodeToPODMapping();
             if (!string.IsNullOrEmpty(empId))
             {
                 // Edit existing employee, load data
@@ -67,16 +68,16 @@ namespace EmployeeData.Pages.Registration
             return Page();
         }
 
-        
+
         // OnPost to save a new employee record or update an existing one
         public async Task<IActionResult> OnPost()
         {
-                if (Employee.Certificates == "Others" && !string.IsNullOrWhiteSpace(Employee.OtherCertificate))
+            if (Employee.Certificates == "Others" && !string.IsNullOrWhiteSpace(Employee.OtherCertificate))
             {
                 // Set the custom certificate value if "Others" is selected
                 Employee.Certificates = Employee.OtherCertificate;
             }
-           
+
             // Validate model
             if (!ModelState.IsValid)
             {
@@ -91,7 +92,7 @@ namespace EmployeeData.Pages.Registration
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
                 // Define the file path
-                 employeeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeData.xlsx");
+                employeeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeData.xlsx");
 
                 // Ensure directory exists
                 string directory = Path.GetDirectoryName(employeeFilePath);
@@ -106,9 +107,9 @@ namespace EmployeeData.Pages.Registration
 
                 // Load or create the worksheet
                 var worksheet = package.Workbook.Worksheets["Employees"];
-            
 
-               var rowCount = worksheet.Dimension?.Rows ?? 6;
+
+                var rowCount = worksheet.Dimension?.Rows ?? 6;
 
                 if (string.IsNullOrEmpty(Employee.EmpId)) // If editing, update the existing record
                 {
@@ -144,80 +145,100 @@ namespace EmployeeData.Pages.Registration
                         worksheet.Cells[rowCount, 7].Value = Employee.ProjectCode; // Column 7: ProjectCode
                         worksheet.Cells[rowCount, 8].Value = Employee.ProjectName; // Column 8: ProjectName
                         worksheet.Cells[rowCount, 9].Value = Employee.PONumber; // Column 9: PONumber
-                        // Map the Project Code to the corresponding POD Name
-                        //worksheet.Cells[existingRow, 10].Value = Employee.PODName; // PODName (in case no mapping exists)
-                if (ProjectCodeToPODMapping.ContainsKey(Employee.ProjectCode.ToString()))
-                {
-                    worksheet.Cells[existingRow, 10].Value = string.Join(",", ProjectCodeToPODMapping[Employee.ProjectCode.ToString()]); // PODName
-                }
-                else
-                {
-                    worksheet.Cells[existingRow, 10].Value = Employee.PODName; // PODName (in case no mapping exists)
-                }
-                        worksheet.Cells[rowCount, 12].Value = Employee.AltriaPODOwner; // Column 12: AltriaPODOwner
-                        worksheet.Cells[rowCount, 13].Value = Employee.ALCSDirector; // Column 13: ALCSDirector
-                        worksheet.Cells[rowCount, 22].Value = Employee.Location; // Column 22: Location
-                        worksheet.Cells[rowCount, 23].Value = Employee.OffshoreCity; // Column 23: OffshoreCity
-                        worksheet.Cells[rowCount, 34].Value = Employee.OffshoreBackup; // Column 34: OffshoreBackup
-                        worksheet.Cells[rowCount, 35].Value = Employee.Transition; // Column 35: Transition
-                        worksheet.Cells[rowCount, 60].Value = Employee.COR; // Column 60: COR
-                        worksheet.Cells[rowCount, 62].Value = Employee.Group; // Column 62: Group
-                        worksheet.Cells[rowCount, 25].Value = Employee.RoleinPOD; // Column 25: RoleinPOD
-                        worksheet.Cells[rowCount, 63].Value = Employee.MonthlyPrice; // Column 63: MonthlyPrice
-                        worksheet.Cells[rowCount, 26].Value = Employee.AltriaEXP; // Column 63: MonthlyPrice
+                                                                                // Map the Project Code to the corresponding POD Name
+
+                        if (ProjectCodeToPODMapping.ContainsKey(Employee.ProjectCode.ToString()))
+                        {
+                            worksheet.Cells[existingRow, 10].Value = string.Join(",", ProjectCodeToPODMapping[Employee.ProjectCode.ToString()]); // PODName
+                        }
+                        else
+                        {
+                            worksheet.Cells[existingRow, 10].Value = Employee.PODName; // PODName (in case no mapping exists)
+                        }
+                        worksheet.Cells[existingRow, 12].Value = Employee.AltriaPODOwner; // Column 12: AltriaPODOwner
+                        worksheet.Cells[existingRow, 13].Value = Employee.ALCSDirector; // Column 13: ALCSDirector
+                        worksheet.Cells[existingRow, 22].Value = Employee.Location; // Column 22: Location
+                        worksheet.Cells[existingRow, 23].Value = Employee.OffshoreCity; // Column 23: OffshoreCity
+                        worksheet.Cells[existingRow, 34].Value = Employee.OffshoreBackup; // Column 34: OffshoreBackup
+                        worksheet.Cells[existingRow, 35].Value = Employee.Transition; // Column 35: Transition
+                        worksheet.Cells[existingRow, 60].Value = Employee.COR; // Column 60: COR
+                        worksheet.Cells[existingRow, 62].Value = Employee.Group; // Column 62: Group
+                        worksheet.Cells[existingRow, 25].Value = Employee.RoleinPOD; // Column 25: RoleinPOD
+                        worksheet.Cells[existingRow, 63].Value = Employee.MonthlyPrice; // Column 63: MonthlyPrice
+                        worksheet.Cells[existingRow, 26].Value = Employee.AltriaEXP; // Column 63: MonthlyPrice
 
                         // Dates: Ensure that start and end dates are formatted correctly
-                        worksheet.Cells[rowCount, 132].Value = Employee.StartDate.ToString("dd-MM-yyy"); // Column 131: StartDate
-                        worksheet.Cells[rowCount, 133].Value = Employee.EndDate.ToString("dd-MM-yyy"); // Column 132: EndDate
+                        worksheet.Cells[existingRow, 132].Value = Employee.StartDate.ToString("dd-MM-yyy"); // Column 131: StartDate
+                        worksheet.Cells[existingRow, 133].Value = Employee.EndDate.ToString("dd-MM-yyy"); // Column 132: EndDate
+
+
+                        worksheet.Cells[existingRow, 36].Value = Employee.January; // Column 36: January
+                        worksheet.Cells[existingRow, 37].Value = Employee.February; // Column 37: February
+                        worksheet.Cells[existingRow, 38].Value = Employee.March; // Column 38: March
+                        worksheet.Cells[existingRow, 39].Value = Employee.April; // Column 39: April
+                        worksheet.Cells[existingRow, 40].Value = Employee.May; // Column 40: May
+                        worksheet.Cells[existingRow, 41].Value = Employee.June; // Column 41: June
+                        worksheet.Cells[existingRow, 42].Value = Employee.July; // Column 42: July
+                        worksheet.Cells[existingRow, 43].Value = Employee.August; // Column 43: August
+                        worksheet.Cells[existingRow, 44].Value = Employee.September; // Column 44: September
+                        worksheet.Cells[existingRow, 45].Value = Employee.October; // Column 45: October
+                        worksheet.Cells[existingRow, 46].Value = Employee.November; // Column 46: November
+                        worksheet.Cells[existingRow, 47].Value = Employee.December; // Column 47: December
+                
+
+                            worksheet.Cells[existingRow, 64].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.January)).ToString();
+                            worksheet.Cells[existingRow, 65].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.February)).ToString();
+                            worksheet.Cells[existingRow, 66].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.March)).ToString();
+                            worksheet.Cells[existingRow, 67].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.April)).ToString();
+                            worksheet.Cells[existingRow, 68].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.May)).ToString();
+                            worksheet.Cells[existingRow, 69].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.June)).ToString();
+                            worksheet.Cells[existingRow, 70].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.July)).ToString();
+                            worksheet.Cells[existingRow, 71].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.August)).ToString();
+                            worksheet.Cells[existingRow, 72].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.September)).ToString();
+                            worksheet.Cells[existingRow, 73].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.October)).ToString();
+                            worksheet.Cells[existingRow, 74].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.November)).ToString();
+                            worksheet.Cells[existingRow, 75].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.December)).ToString();
 
                         
-                        worksheet.Cells[rowCount, 36].Value = Employee.January; // Column 36: January
-                        worksheet.Cells[rowCount, 37].Value = Employee.February; // Column 37: February
-                        worksheet.Cells[rowCount, 38].Value = Employee.March; // Column 38: March
-                        worksheet.Cells[rowCount, 39].Value = Employee.April; // Column 39: April
-                        worksheet.Cells[rowCount, 40].Value = Employee.May; // Column 40: May
-                        worksheet.Cells[rowCount, 41].Value = Employee.June; // Column 41: June
-                        worksheet.Cells[rowCount, 42].Value = Employee.July; // Column 42: July
-                        worksheet.Cells[rowCount, 43].Value = Employee.August; // Column 43: August
-                        worksheet.Cells[rowCount, 44].Value = Employee.September; // Column 44: September
-                        worksheet.Cells[rowCount, 45].Value = Employee.October; // Column 45: October
-                        worksheet.Cells[rowCount, 46].Value = Employee.November; // Column 46: November
-                        worksheet.Cells[rowCount, 47].Value = Employee.December; // Column 47: December
 
-                        
-                        return RedirectToPage("/EmployeeList/EmployeeList");
-                        }
-                            else
-                            {
-                                // If employee not found for editing, append as new
-                                AddEmployeeToExcel(worksheet, rowCount);
-
-                            
-                            }
-                        }
-                        else // If adding a new employee, append as new
-                        {
-                            AddEmployeeToExcel(worksheet, rowCount);
-                        
-                        }
-
-                        // Save the changes to the file
-                        await package.SaveAsync();
-
-                        // Redirect to employee list
-                        return RedirectToPage("/EmployeeList/EmployeeList");
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        // Log and display error
-                        Console.WriteLine($"Error: {ex.Message}");
-                        ModelState.AddModelError("", "An error occurred while processing the request.");
-                        LoadDropdownOptions(); // Reload dropdowns
-                        return Page();
+                        // If employee not found for editing, append as new
+                        AddEmployeeToExcel(worksheet, rowCount);
+
+
                     }
+
+                }
+                else // If adding a new employee, append as new
+                {
+                    AddEmployeeToExcel(worksheet, rowCount);
+
                 }
 
-       private void LogModelErrors()
+
+
+                // Save the changes to the file
+                await package.SaveAsync();
+
+                // Redirect to employee list
+                return RedirectToPage("/EmployeeList/EmployeeList");
+            }
+
+            catch (Exception ex)
+            {
+                // Log and display error
+                Console.WriteLine($"Error: {ex.Message}");
+                ModelState.AddModelError("", "An error occurred while processing the request.");
+                LoadDropdownOptions(); // Reload dropdowns
+                return Page();
+            }
+
+
+        }
+
+        private void LogModelErrors()
         {
             foreach (var state in ModelState)
             {
@@ -231,40 +252,57 @@ namespace EmployeeData.Pages.Registration
                 }
             }
         }
-        
-       private void LoadProjectCodeToPODMapping()
-    {
-        // Load the Excel file with project codes and PODs
-        var package = new ExcelPackage(new FileInfo(employeeFilePath));
-        
-            var worksheet = package.Workbook.Worksheets["Dropdown"];  // Assuming the data is in the first sheet
-            int rowCount = worksheet.Dimension?.Rows?? 1;
 
-            // Read each row and populate the ProjectCodeToPODMapping dictionary
-            for (int row = 2; row <= rowCount; row++)  // Assuming the first row is header
+        private void LoadProjectCodeToPODMapping()
+        {
+            try
             {
-                string projectCode = worksheet.Cells[row, 3].Text;  // Read the Project Code (Column 1)
-                string pods = worksheet.Cells[row, 5].Text;  // Read the PODs (Column 2)
-
-                if (!string.IsNullOrEmpty(projectCode) && !string.IsNullOrEmpty(pods))
+                // Load the Excel file with project codes and PODs
+                using (var package = new ExcelPackage(new FileInfo(employeeFilePath)))
                 {
-                    // Split POD names into a list and assign to the project code
-                    var podList = new List<string>(pods.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
-                    ProjectCodeToPODMapping[projectCode] = podList;
+                    var worksheet = package.Workbook.Worksheets["Dropdown"];
+
+                    if (worksheet != null)
+                    {
+                        int rowCount = worksheet.Dimension?.Rows ?? 1;
+
+                        for (int row = 2; row <= rowCount; row++)
+                        {
+                            string projectCode = worksheet.Cells[row, 3].Text;
+                            string pods = worksheet.Cells[row, 5].Text;
+
+                            if (!string.IsNullOrEmpty(projectCode) && !string.IsNullOrEmpty(pods))
+                            {
+                                var podList = new List<string>(pods.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                                ProjectCodeToPODMapping[projectCode] = podList;
+                            }
+                        }
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                // Log the exception for debugging
+                Console.WriteLine($"Error loading ProjectCodeToPODMapping: {ex.Message}");
+                // Handle the exception gracefully (e.g., display an error message to the user)
+            }
         }
+
 
         public JsonResult OnGetPODNames(string projectCode)
         {
             LoadProjectCodeToPODMapping();
+            if (string.IsNullOrWhiteSpace(projectCode))
+                return new JsonResult("Invalid Project Code");
             if (ProjectCodeToPODMapping.ContainsKey(projectCode))
             {
                 var podNames = ProjectCodeToPODMapping[projectCode];
                 return new JsonResult(podNames);
-            }else{
+            }
+            else
+            {
 
-            return new JsonResult(new List<string>()); // Return an empty list if project code not found
+                return new JsonResult(new List<string>()); // Return an empty list if project code not found
             }
 
         }
@@ -283,7 +321,8 @@ namespace EmployeeData.Pages.Registration
             TowerOptions = new List<SelectListItem>();
             CertificationOptions = new List<SelectListItem>();
             VISATypeOptions = new List<SelectListItem>();
-            
+            bulkOptions = new List<SelectListItem>();
+
 
             if (System.IO.File.Exists(employeeFilePath))
             {
@@ -297,7 +336,7 @@ namespace EmployeeData.Pages.Registration
 
                     for (int row = 2; row <= rowCount; row++)
                     {
-                        
+
                         var grade = worksheet.Cells[row, 1]?.Text?.Trim();
                         var bu = worksheet.Cells[row, 2]?.Text?.Trim();
                         var projectcode = worksheet.Cells[row, 3]?.Text?.Trim();
@@ -308,11 +347,12 @@ namespace EmployeeData.Pages.Registration
                         var tower = worksheet.Cells[row, 8]?.Text?.Trim();
                         var globalgrade = worksheet.Cells[row, 9]?.Text?.Trim();
                         var bgv = worksheet.Cells[row, 10]?.Text?.Trim();
-                        var certificate = worksheet.Cells[row,11]?.Text?.Trim();
-                        var visaType  = worksheet.Cells[row,12]?.Text?.Trim();
+                        var certificate = worksheet.Cells[row, 11]?.Text?.Trim();
+                        var visaType = worksheet.Cells[row, 12]?.Text?.Trim();
+                        var bulk = worksheet.Cells[row, 13]?.Text?.Trim();
 
-                        if (!string.IsNullOrWhiteSpace(grade)) 
-                        { 
+                        if (!string.IsNullOrWhiteSpace(grade))
+                        {
                             GradeOptions.Add(new SelectListItem { Value = grade, Text = grade });
                             GradeToGlobalGrade.Add(grade, globalgrade);
                         }
@@ -322,16 +362,16 @@ namespace EmployeeData.Pages.Registration
                         if (!string.IsNullOrWhiteSpace(bgv))
                             BGVOptions.Add(new SelectListItem { Value = bgv, Text = bgv });
 
-                    
+
                         if (!string.IsNullOrWhiteSpace(projectcode) && !string.IsNullOrWhiteSpace(projectname))
                         {
                             ProjectCodeOptions.Add(new SelectListItem { Value = projectcode, Text = projectcode });
-                             projectCodeToNameMapping.Add(projectcode, projectname);
+                            projectCodeToNameMapping.Add(projectcode, projectname);
                         }
-                        
+
                         if (!string.IsNullOrWhiteSpace(PODname))
                         {
-                            PODNameOptions.Add(new SelectListItem  { Value = "", Text = "--Select POD--" });
+                            PODNameOptions.Add(new SelectListItem { Value = "", Text = "--Select POD--" });
 
                         }
                         if (!string.IsNullOrWhiteSpace(Offshore))
@@ -348,16 +388,20 @@ namespace EmployeeData.Pages.Registration
                         }
                         if (!string.IsNullOrWhiteSpace(certificate))
                         {
-                           
+
 
                             CertificationOptions.Add(new SelectListItem { Value = certificate, Text = certificate });
-                            
+
                         }
-                         if (!string.IsNullOrWhiteSpace(visaType))
+                        if (!string.IsNullOrWhiteSpace(visaType))
                         {
                             VISATypeOptions.Add(new SelectListItem { Value = visaType, Text = visaType });
                         }
-                        
+                        if (!string.IsNullOrWhiteSpace(bulk))
+                        {
+                            bulkOptions.Add(new SelectListItem { Value = bulk, Text = bulk });
+                        }
+
                     }
                 }
                 else
@@ -378,7 +422,7 @@ namespace EmployeeData.Pages.Registration
         }
 
 
-        private int GetEmployeeRow(ExcelWorksheet worksheet, string empId,int projectCode)
+        private int GetEmployeeRow(ExcelWorksheet worksheet, string empId, int projectCode)
         {
             var rowCount = worksheet.Dimension?.Rows ?? 6;
             for (int row = 6; row <= rowCount; row++)
@@ -392,7 +436,7 @@ namespace EmployeeData.Pages.Registration
         }
 
 
-         private Dictionary<string,object> GetEmployeeData()
+        private Dictionary<string, object> GetEmployeeData()
         {
             return typeof(Employee).GetProperties()
                 .ToDictionary(prop => prop.Name, prop => prop.GetValue(Employee));
@@ -469,6 +513,23 @@ namespace EmployeeData.Pages.Registration
             worksheet.Cells[row, 45].Value = Employee.October; // Column 45: October
             worksheet.Cells[row, 46].Value = Employee.November; // Column 46: November
             worksheet.Cells[row, 47].Value = Employee.December; // Column 47: December
+
+
+                worksheet.Cells[row, 64].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.January)).ToString();
+                worksheet.Cells[row, 65].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.February)).ToString();
+                worksheet.Cells[row, 66].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.March)).ToString();
+                worksheet.Cells[row, 67].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.April)).ToString();
+                worksheet.Cells[row, 68].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.May)).ToString();
+                worksheet.Cells[row, 69].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.June)).ToString();
+                worksheet.Cells[row, 70].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.July)).ToString();
+                worksheet.Cells[row, 71].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.August)).ToString();
+                worksheet.Cells[row, 72].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.September)).ToString();
+                worksheet.Cells[row, 73].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.October)).ToString();
+                worksheet.Cells[row, 74].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.November)).ToString();
+                worksheet.Cells[row, 75].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.December)).ToString();
+
+            
+
         }
 
         private List<Employee> GetAllEmployees()
@@ -529,20 +590,20 @@ namespace EmployeeData.Pages.Registration
                             RoleinPOD = worksheet.Cells[row, 25].Text,
                             MonthlyPrice = ParseDecimal(worksheet.Cells[row, 63].Text),
                             AltriaEXP = ParseDecimal(worksheet.Cells[row, 26].Text),
-                            COR = worksheet.Cells[row, 60].Text,
-                            January = ParseDecimal(worksheet.Cells[row, 36].Text),
-                            February = ParseDecimal(worksheet.Cells[row, 37].Text),
-                            March = ParseDecimal(worksheet.Cells[row, 38].Text),
-                            April = ParseDecimal(worksheet.Cells[row, 39].Text),
-                            May = ParseDecimal(worksheet.Cells[row, 40].Text),
-                            June = ParseDecimal(worksheet.Cells[row, 41].Text),
-                            July = ParseDecimal(worksheet.Cells[row, 42].Text),
-                            August = ParseDecimal(worksheet.Cells[row, 43].Text),
-                            September = ParseDecimal(worksheet.Cells[row, 44].Text),
-                            October = ParseDecimal(worksheet.Cells[row, 45].Text),
-                            November = ParseDecimal(worksheet.Cells[row, 46].Text),
-                            December = ParseDecimal(worksheet.Cells[row, 47].Text),
-                        
+                            COR = ParseDecimal(worksheet.Cells[row, 60].Text),
+                            January = worksheet.Cells[row, 36].Text,
+                            February = worksheet.Cells[row, 37].Text,
+                            March = worksheet.Cells[row, 38].Text,
+                            April = worksheet.Cells[row, 39].Text,
+                            May = worksheet.Cells[row, 40].Text,
+                            June = worksheet.Cells[row, 41].Text,
+                            July = worksheet.Cells[row, 42].Text,
+                            August = worksheet.Cells[row, 43].Text,
+                            September = worksheet.Cells[row, 44].Text,
+                            October = worksheet.Cells[row, 45].Text,
+                            November = worksheet.Cells[row, 46].Text,
+                            December = worksheet.Cells[row, 47].Text,
+
                         };
                         employees.Add(emp);
                     }
@@ -551,9 +612,9 @@ namespace EmployeeData.Pages.Registration
             return employees;
         }
 
-            [HttpGet]
-            public IActionResult OnGetProjectName(string projectCode)
-            {
+        [HttpGet]
+        public IActionResult OnGetProjectName(string projectCode)
+        {
             LoadDropdownOptions();
             if (string.IsNullOrWhiteSpace(projectCode))
                 return new JsonResult("Invalid Project Code");
@@ -562,11 +623,11 @@ namespace EmployeeData.Pages.Registration
                 return new JsonResult(projectName);
 
             return new JsonResult("Project Code not found");
-             }
+        }
 
-             [HttpGet]
-            public IActionResult OnGetGlobalGrade(string grade)
-            {
+        [HttpGet]
+        public IActionResult OnGetGlobalGrade(string grade)
+        {
             LoadDropdownOptions();
             if (string.IsNullOrWhiteSpace(grade))
                 return new JsonResult("Invalid Grade");
@@ -575,7 +636,7 @@ namespace EmployeeData.Pages.Registration
                 return new JsonResult(GlobalGrade);
 
             return new JsonResult("Global Grade not found");
-             }
+        }
 
 
         private DateTime ParseDate(string dateString)

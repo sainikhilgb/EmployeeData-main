@@ -37,39 +37,39 @@ namespace EmployeeData.Pages.EmployeeList
 
 
         // Method to load Employee and Project details from Excel
-             public string Message { get; set; }
+    public string Message { get; set; }
        public void OnGet()
-{
-    Employees = GetAllEmployees(); // Fetch all employees initially (used later for filtering)
-    LoadDropdownOptions();
-    LoadEmployeeData();
-
-    // If there's a search term, apply the filter to search across all rows
-    if (!string.IsNullOrEmpty(SearchTerm))
     {
-        // Filter employees based on EmpId, Email, or ProjectCode
-        var filteredEmployees = Employees
-            .Where(e => e.EmpId.ToString().Contains(SearchTerm) 
-                     || e.Email.Contains(SearchTerm) 
-                     || e.ProjectCode.ToString().Contains(SearchTerm))
-            .ToList();
+        Employees = GetAllEmployees(); // Fetch all employees initially (used later for filtering)
+        LoadDropdownOptions();
+        LoadEmployeeData();
 
-        if (filteredEmployees.Any())
+        // If there's a search term, apply the filter to search across all rows
+        if (!string.IsNullOrEmpty(SearchTerm))
         {
-            Employees = filteredEmployees; // Update the list with filtered employees
+            // Filter employees based on EmpId, Email, or ProjectCode
+            var filteredEmployees = Employees
+                .Where(e => e.EmpId.ToString().Contains(SearchTerm) 
+                        || e.Email.Contains(SearchTerm) 
+                        || e.ProjectCode.ToString().Contains(SearchTerm))
+                .ToList();
+
+            if (filteredEmployees.Any())
+            {
+                Employees = filteredEmployees; // Update the list with filtered employees
+            }
+            else
+            {
+                Message = "No employee data is available for the provided search term.";
+                Employees = new List<Employee>(); // Empty list when no matches are found
+            }
         }
         else
         {
-            Message = "No employee data is available for the provided search term.";
-            Employees = new List<Employee>(); // Empty list when no matches are found
+            // Display only the top 20 employees when no search term is provided
+            Employees = Employees.Take(20).ToList();
         }
     }
-    else
-    {
-        // Display only the top 20 employees when no search term is provided
-        Employees = Employees.Take(20).ToList();
-    }
-}
 
         
 
@@ -218,26 +218,40 @@ namespace EmployeeData.Pages.EmployeeList
                             ABLGBL = worksheet.Cells[row, 3].Text,
                             TLName = worksheet.Cells[row, 5].Text,
                             Transition = worksheet.Cells[row, 35].Text,
-                            COR = worksheet.Cells[row, 60].Text,
+                            COR = ParseDecimal(worksheet.Cells[row, 60].Text),
                             Group = worksheet.Cells[row, 62].Text,
                             RoleinPOD = worksheet.Cells[row, 25].Text,
                             MonthlyPrice = ParseDecimal(worksheet.Cells[row, 63].Text),
-                            January = ParseDecimal(worksheet.Cells[row,36].Text),
-                            February = ParseDecimal(worksheet.Cells[row,37].Text),
-                            March = ParseDecimal(worksheet.Cells[row,38].Text),
-                            April = ParseDecimal(worksheet.Cells[row,39].Text),
-                            May = ParseDecimal(worksheet.Cells[row,40].Text),
-                            June = ParseDecimal(worksheet.Cells[row,41].Text),
-                            July = ParseDecimal(worksheet.Cells[row,42].Text),
-                            August = ParseDecimal(worksheet.Cells[row,43].Text),
-                            September = ParseDecimal(worksheet.Cells[row,44].Text),
-                            October = ParseDecimal(worksheet.Cells[row,45].Text),
-                            November = ParseDecimal(worksheet.Cells[row,46].Text),
-                            December =ParseDecimal(worksheet.Cells[row,47].Text),
+                            January = worksheet.Cells[row,36].Text,
+                            February = worksheet.Cells[row,37].Text,
+                            March = worksheet.Cells[row,38].Text,
+                            April = worksheet.Cells[row,39].Text,
+                            May = worksheet.Cells[row,40].Text,
+                            June = worksheet.Cells[row,41].Text,
+                            July = worksheet.Cells[row,42].Text,
+                            August = worksheet.Cells[row,43].Text,
+                            September = worksheet.Cells[row,44].Text,
+                            October = worksheet.Cells[row,45].Text,
+                            November = worksheet.Cells[row,46].Text,
+                            December =worksheet.Cells[row,47].Text,
+                            JanFin =worksheet.Cells[row,64].Text,
+                            FebFin =worksheet.Cells[row,65].Text,
+                             MarFin =worksheet.Cells[row,66].Text,
+                             AprFin =worksheet.Cells[row,67].Text,
+                             MayFin =worksheet.Cells[row,68].Text,
+                             JuneFin =worksheet.Cells[row,69].Text,
+                             JulyFin =worksheet.Cells[row,70].Text,
+                             AugFin =worksheet.Cells[row,71].Text,
+                             SepFin =worksheet.Cells[row,72].Text,
+                             OctFin =worksheet.Cells[row,73].Text,
+                             NovFin =worksheet.Cells[row,74].Text,
+                             DecFin =worksheet.Cells[row,75].Text,
                         
                     };
 
                         Employees.Add(employee);
+
+                        
                     }
                 }
             }
@@ -301,22 +315,35 @@ namespace EmployeeData.Pages.EmployeeList
                             RoleinPOD = worksheet.Cells[row, 25].Text,
                             MonthlyPrice = ParseDecimal(worksheet.Cells[row, 63].Text),
                             AltriaEXP = ParseDecimal(worksheet.Cells[row, 26].Text),
-                            COR = worksheet.Cells[row, 60].Text,
-                            January = ParseDecimal(worksheet.Cells[row, 36].Text),
-                            February = ParseDecimal(worksheet.Cells[row, 37].Text),
-                            March = ParseDecimal(worksheet.Cells[row, 38].Text),
-                            April = ParseDecimal(worksheet.Cells[row, 39].Text),
-                            May = ParseDecimal(worksheet.Cells[row, 40].Text),
-                            June = ParseDecimal(worksheet.Cells[row, 41].Text),
-                            July = ParseDecimal(worksheet.Cells[row, 42].Text),
-                            August = ParseDecimal(worksheet.Cells[row, 43].Text),
-                            September = ParseDecimal(worksheet.Cells[row, 44].Text),
-                            October = ParseDecimal(worksheet.Cells[row, 45].Text),
-                            November = ParseDecimal(worksheet.Cells[row, 46].Text),
-                            December = ParseDecimal(worksheet.Cells[row, 47].Text),
+                            COR = ParseDecimal(worksheet.Cells[row, 60].Text),
+                            January = worksheet.Cells[row,36].Text,
+                            February = worksheet.Cells[row,37].Text,
+                            March = worksheet.Cells[row,38].Text,
+                            April = worksheet.Cells[row,39].Text,
+                            May = worksheet.Cells[row,40].Text,
+                            June = worksheet.Cells[row,41].Text,
+                            July = worksheet.Cells[row,42].Text,
+                            August = worksheet.Cells[row,43].Text,
+                            September = worksheet.Cells[row,44].Text,
+                            October = worksheet.Cells[row,45].Text,
+                            November = worksheet.Cells[row,46].Text,
+                            December =worksheet.Cells[row,47].Text,
+                            JanFin =worksheet.Cells[row,64].Text,
+                            FebFin =worksheet.Cells[row,65].Text,
+                             MarFin =worksheet.Cells[row,66].Text,
+                             AprFin =worksheet.Cells[row,67].Text,
+                             MayFin =worksheet.Cells[row,68].Text,
+                             JuneFin =worksheet.Cells[row,69].Text,
+                             JulyFin =worksheet.Cells[row,70].Text,
+                             AugFin =worksheet.Cells[row,71].Text,
+                             SepFin =worksheet.Cells[row,72].Text,
+                             OctFin =worksheet.Cells[row,73].Text,
+                             NovFin =worksheet.Cells[row,74].Text,
+                             DecFin =worksheet.Cells[row,75].Text,
                         
                         };
                         employees.Add(emp);
+                         
                     }
                 }
             }
@@ -327,109 +354,69 @@ namespace EmployeeData.Pages.EmployeeList
 
 // Method to delete an employee
 [HttpDelete]
-public IActionResult OnPostDelete(string empId)
+public IActionResult OnPostDelete(string empId,int projectCode)
 {
     // Remove employee from the in-memory list
-    var employeeToDelete = Employees.FirstOrDefault(e => e.EmpId == empId)?? new Employee();
-    if (employeeToDelete != null)
+    var employeeToDelete = GetEmployeeById(empId,projectCode);
+    if (employeeToDelete.IsActiveInProject == "Y")
     {
-        Employees.Remove(employeeToDelete);
-
-        // Update the Excel file
-        DeleteEmployeeFromExcel(empId);
-
-        // Reload data to reflect changes
-        LoadEmployeeData();
+        DeleteEmployeeFromExcel(empId,"N");
+    }else{
+        DeleteEmployeeFromExcel(empId,"Y");
     }
+   
 
     // Redirect back to the same page after deletion
     return RedirectToPage();
 }
 
-
-
-        // Method to delete an employee from the Excel file
-        private void DeleteEmployeeFromExcel(string empId)
+ // Method to delete an employee from the Excel file
+        private void DeleteEmployeeFromExcel(string empId, string newStatus)
         {
-            if (System.IO.File.Exists(employeeFilePath))
+            if (!System.IO.File.Exists(employeeFilePath))
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                return; // Handle or log the case where file doesn't exist
+            }
+
+            try
+            {
                 using (var package = new ExcelPackage(new FileInfo(employeeFilePath)))
                 {
                     var worksheet = package.Workbook.Worksheets["Employees"];
                     if (worksheet != null)
                     {
-                    var rowCount = worksheet.Dimension?.Rows ?? 6;
-                        for (int row = 6; row <= rowCount; row++) // Skip header
+                        for (int row = 6; row <= worksheet.Dimension.Rows; row++) // Assuming header row is the first row
                         {
-                            string currentEmpId = worksheet.Cells[row, 15].Text;
+                            var currentEmpId = worksheet.Cells[row, 15].Value?.ToString(); // Adjust column index as needed
                             if (currentEmpId == empId)
                             {
-                                worksheet.DeleteRow(row);
+                                // Assuming the IsActiveInProject column is the 20th column (adjust as needed)
+                                worksheet.Cells[row, 20].Value = newStatus;
                                 break;
                             }
                         }
 
-                        // Save changes to the Excel file
                         package.Save();
                     }
                 }
             }
-        }
-
-
-// Method to delete an project
-[HttpDelete]
-public IActionResult OnPostProjectDelete(int projectCode)
-{
-    // Remove employee from the in-memory list
-    var employeeToDelete = Employees.FirstOrDefault(e => e.ProjectCode == projectCode)?? new Employee();
-    if (employeeToDelete != null)
-    {
-        Employees.Remove(employeeToDelete);
-
-        // Update the Excel file
-        DeleteProjectFromExcel(projectCode);
-
-        // Reload data to reflect changes
-     LoadEmployeeData();
-    }
-
-    // Redirect back to the same page after deletion
-    return RedirectToPage();
-}
-
-
-
-        // Method to delete an employee from the Excel file
-        private void DeleteProjectFromExcel(int projectCode)
-        {
-            if (System.IO.File.Exists(employeeFilePath))
+            catch (Exception ex)
             {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                using (var package = new ExcelPackage(new FileInfo(employeeFilePath)))
-                {
-                    var worksheet = package.Workbook.Worksheets["Employees"];
-                    if (worksheet != null)
-                    {
-                    var rowCount = worksheet.Dimension?.Rows ?? 6;
-                        for (int row = 6; row <= rowCount; row++) // Skip header
-                        {
-                            int currentProjectCode = ParseInt(worksheet.Cells[row, 7].Text);
-                            if (currentProjectCode == projectCode)
-                            {
-                                worksheet.DeleteRow(row);
-                                break;
-                            }
-                        }
-
-                        // Save changes to the Excel file
-                        package.Save();
-                    }
-                }
+                // Handle exception during Excel manipulation (logging, error message)
+                Console.WriteLine($"Error updating employee status in Excel: {ex.Message}");
             }
         }
-       
+
+
+
+        
+
+ private Employee GetEmployeeById(string empId, int projectCode)
+        {
+            var employees = GetAllEmployees();
+            return employees.FirstOrDefault(emp => emp.EmpId == empId && emp.ProjectCode == projectCode);
+        }
+
         
 
               private DateTime ParseDate(string dateString)

@@ -85,3 +85,4 @@ C:\Users\sgodlave\OneDrive - Capgemini\Documents\DotNet\EmployeeData-main\obj\De
 C:\Users\sgodlave\OneDrive - Capgemini\Documents\DotNet\EmployeeData-main\obj\Debug\net8.0\EmployeeData.pdb
 C:\Users\sgodlave\OneDrive - Capgemini\Documents\DotNet\EmployeeData-main\obj\Debug\net8.0\EmployeeData.genruntimeconfig.cache
 C:\Users\sgodlave\OneDrive - Capgemini\Documents\DotNet\EmployeeData-main\obj\Debug\net8.0\ref\EmployeeData.dll
+C:\Users\sgodlave\OneDrive - Capgemini\Documents\DotNet\EmployeeData-main\obj\Debug\net8.0\EmployeeData.sourcelink.json
