@@ -101,21 +101,26 @@
      
      <div class="input-box col-3">
         <label for="AltriaEnddate">Altria End date</label>
-        <input asp-for="Employee.AltriaEnddate" type="date" onload="getDate()" class="form-control date-field"/>
+        <input id="AltriaEnddate" asp-for="Employee.AltriaEnddate" type="date" onload="getDate()" class="form-control date-field"/>
         <span asp-validation-for="Employee.AltriaEnddate" class="text-danger"></span>
      </div>
         
         <div class="form-group col-3">
-        <label>Active in Project:</label>
-        
-            <input type="radio" id="activeYes" name="Employee.IsActiveInProject" value="Y" asp-for="Employee.IsActiveInProject" />
-            <label  for="activeYes">Yes</label>
-        
-            <input type="radio" id="activeNo" name="Employee.IsActiveInProject" value="N" asp-for="Employee.IsActiveInProject" />
-            <label for="activeNo">No</label>
-        
-        <span asp-validation-for="Employee.IsActiveInProject" class="text-danger"></span>
-        
+            <label>Active in Project:</label>
+            <div class="row">
+
+                <input type="radio" id="activeYes" class="col-2 custom-radio" name="Employee.IsActiveInProject" value="Y" asp-for="Employee.IsActiveInProject" />
+                <label  for="activeYes" class="col-3">Yes</label>
+            </div>
+                                    
+            <div class="row">
+
+                <input type="radio" id="activeNo" class="col-2 custom-radio" name="Employee.IsActiveInProject" value="N" asp-for="Employee.IsActiveInProject" />
+                <label for="activeNo" class="col-3">No</label>
+            </div>
+                                    
+            <span asp-validation-for="Employee.IsActiveInProject" class="text-danger"></span>
+                                    
     </div>
     <div class="input-box col-3">
         <label for="BGV">BGV Status</label>

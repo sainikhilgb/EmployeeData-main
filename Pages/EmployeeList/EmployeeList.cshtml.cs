@@ -40,7 +40,7 @@ namespace EmployeeData.Pages.EmployeeList
     public string Message { get; set; }
        public void OnGet()
     {
-        Employees = GetAllEmployees(); // Fetch all employees initially (used later for filtering)
+        
         LoadDropdownOptions();
         LoadEmployeeData();
 
@@ -49,11 +49,10 @@ namespace EmployeeData.Pages.EmployeeList
         {
             // Filter employees based on EmpId, Email, or ProjectCode
             var filteredEmployees = Employees
-                .Where(e => e.EmpId.ToString().Contains(SearchTerm) 
-                        || e.Email.Contains(SearchTerm) 
-                        || e.ProjectCode.ToString().Contains(SearchTerm))
-                .ToList();
-
+            .Where(emp => emp.EmpId.Contains(SearchTerm)
+            || emp.Email.Contains(SearchTerm)
+            || emp.ProjectCode.ToString().Contains(SearchTerm)) 
+            .ToList();
             if (filteredEmployees.Any())
             {
                 Employees = filteredEmployees; // Update the list with filtered employees
@@ -256,125 +255,22 @@ namespace EmployeeData.Pages.EmployeeList
                 }
             }
         }
-
-        private List<Employee> GetAllEmployees()
-        {
-            // This should read from the Excel file and return a list of all employees
-            // For simplicity, assuming a method that loads all employees
-            var employees = new List<Employee>();
-            if (System.IO.File.Exists(employeeFilePath))
-            {
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                var package = new ExcelPackage(new FileInfo(employeeFilePath));
-
-                var worksheet = package.Workbook.Worksheets["Employees"];
-                if (worksheet != null)
-                {
-                    var rowCount = worksheet.Dimension?.Rows ?? 6;
-                    for (int row = 6; row <= rowCount; row++)
-                    {
-                        var emp = new Employee
-                        {
-                            EmpId = worksheet.Cells[row, 15].Text,
-                            GGID = ParseInt(worksheet.Cells[row, 14].Text),
-                            Resource = worksheet.Cells[row, 17].Text,
-                            Email = worksheet.Cells[row, 16].Text,
-                            Gender = worksheet.Cells[row, 21].Text,
-                            DateOfHire = ParseDate(worksheet.Cells[row, 127].Text),
-                            Grade = worksheet.Cells[row, 18].Text,
-                            GlobalGrade = worksheet.Cells[row, 19].Text,
-                            BU = worksheet.Cells[row, 4].Text,
-                            IsActiveInProject = worksheet.Cells[row, 20].Text,
-                            OverallExp = ParseDecimal(worksheet.Cells[row, 27].Text),
-                            Skills = worksheet.Cells[row, 28].Text,
-                            Certificates = worksheet.Cells[row, 33].Text,
-                            AltriaStartdate = ParseDate(worksheet.Cells[row, 128].Text),
-                            AltriaEnddate = ParseDate(worksheet.Cells[row, 129].Text),
-                            BGVStatus = worksheet.Cells[row, 130].Text,
-                            BGVCompletionDate = ParseDate(worksheet.Cells[row, 134].Text),
-                            VISAStatus = worksheet.Cells[row, 131].Text,
-                            VISAType = worksheet.Cells[row, 135].Text,
-
-                            ProjectCode = ParseInt(worksheet.Cells[row, 7].Text),
-                            ProjectName = worksheet.Cells[row, 8].Text,
-                            PONumber = ParseInt(worksheet.Cells[row, 9].Text),
-                            PODName = worksheet.Cells[row, 10].Text,
-                            StartDate = ParseDate(worksheet.Cells[row, 132].Text),
-                            EndDate = ParseDate(worksheet.Cells[row, 133].Text),
-                            Location = worksheet.Cells[row, 22].Text,
-                            OffshoreCity = worksheet.Cells[row, 23].Text,
-                            OffshoreBackup = worksheet.Cells[row, 34].Text,
-                            AltriaPODOwner = worksheet.Cells[row, 12].Text,
-                            ALCSDirector = worksheet.Cells[row, 13].Text,
-                            Type = worksheet.Cells[row, 1].Text,
-                            Tower = worksheet.Cells[row, 2].Text,
-                            ABLGBL = worksheet.Cells[row, 3].Text,
-                            TLName = worksheet.Cells[row, 5].Text,
-                            Transition = worksheet.Cells[row, 35].Text,
-                            Group = worksheet.Cells[row, 62].Text,
-                            RoleinPOD = worksheet.Cells[row, 25].Text,
-                            MonthlyPrice = ParseDecimal(worksheet.Cells[row, 63].Text),
-                            AltriaEXP = ParseDecimal(worksheet.Cells[row, 26].Text),
-                            COR = ParseDecimal(worksheet.Cells[row, 60].Text),
-                            January = worksheet.Cells[row,36].Text,
-                            February = worksheet.Cells[row,37].Text,
-                            March = worksheet.Cells[row,38].Text,
-                            April = worksheet.Cells[row,39].Text,
-                            May = worksheet.Cells[row,40].Text,
-                            June = worksheet.Cells[row,41].Text,
-                            July = worksheet.Cells[row,42].Text,
-                            August = worksheet.Cells[row,43].Text,
-                            September = worksheet.Cells[row,44].Text,
-                            October = worksheet.Cells[row,45].Text,
-                            November = worksheet.Cells[row,46].Text,
-                            December =worksheet.Cells[row,47].Text,
-                            JanFin =worksheet.Cells[row,64].Text,
-                            FebFin =worksheet.Cells[row,65].Text,
-                             MarFin =worksheet.Cells[row,66].Text,
-                             AprFin =worksheet.Cells[row,67].Text,
-                             MayFin =worksheet.Cells[row,68].Text,
-                             JuneFin =worksheet.Cells[row,69].Text,
-                             JulyFin =worksheet.Cells[row,70].Text,
-                             AugFin =worksheet.Cells[row,71].Text,
-                             SepFin =worksheet.Cells[row,72].Text,
-                             OctFin =worksheet.Cells[row,73].Text,
-                             NovFin =worksheet.Cells[row,74].Text,
-                             DecFin =worksheet.Cells[row,75].Text,
-                        
-                        };
-                        employees.Add(emp);
-                         
-                    }
-                }
-            }
-            return employees;
-        }
-            
         
 
 // Method to delete an employee
-[HttpDelete]
-public IActionResult OnPostDelete(string empId,int projectCode)
+public IActionResult OnPostDelete(string empId,int projectCode, string actionType, DateTime projectExtensionDate)
 {
-    // Remove employee from the in-memory list
-    var employeeToDelete = GetEmployeeById(empId,projectCode);
-    if (employeeToDelete.IsActiveInProject == "Y")
-    {
-        DeleteEmployeeFromExcel(empId,"N");
-    }else{
-        DeleteEmployeeFromExcel(empId,"Y");
-    }
-   
-
+    // Handle project extension date logic if required
+    ExtendProjectDate(empId,projectCode, projectExtensionDate,actionType);
     // Redirect back to the same page after deletion
     return RedirectToPage();
 }
 
- // Method to delete an employee from the Excel file
-        private void DeleteEmployeeFromExcel(string empId, string newStatus)
+        private void ExtendProjectDate(string empId,int projectCode, DateTime newDate,string actionType)
         {
             if (!System.IO.File.Exists(employeeFilePath))
             {
+                Console.WriteLine("Project file does not exist.");
                 return; // Handle or log the case where file doesn't exist
             }
 
@@ -385,48 +281,105 @@ public IActionResult OnPostDelete(string empId,int projectCode)
                     var worksheet = package.Workbook.Worksheets["Employees"];
                     if (worksheet != null)
                     {
-                        for (int row = 6; row <= worksheet.Dimension.Rows; row++) // Assuming header row is the first row
-                        {
-                            var currentEmpId = worksheet.Cells[row, 15].Value?.ToString(); // Adjust column index as needed
-                            if (currentEmpId == empId)
+                        if (!string.IsNullOrEmpty(empId)) // If editing, update the existing record
                             {
-                                // Assuming the IsActiveInProject column is the 20th column (adjust as needed)
-                                worksheet.Cells[row, 20].Value = newStatus;
-                                break;
+                                int existingRow = GetEmployeeRow(worksheet, empId,projectCode);
+                                if (existingRow != -1)
+                                {
+                                // Assuming the EndDate column is the 5th column (adjust index if needed)
+                                worksheet.Cells[existingRow, 129].Value = newDate.ToString("dd-MM-yyyy");
+                                worksheet.Cells[existingRow, 20].Value = actionType;
+                                
                             }
                         }
 
                         package.Save();
                     }
+                    else
+                    {
+                        Console.WriteLine("Projects worksheet not found in the Excel file.");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                // Handle exception during Excel manipulation (logging, error message)
-                Console.WriteLine($"Error updating employee status in Excel: {ex.Message}");
+                // Handle exception during Excel manipulation
+                Console.WriteLine($"Error updating project end date: {ex.Message}");
             }
         }
 
-
-
         
+// Method to delete an employee
+public IActionResult OnPostUpdate(string empId,int projectCode, DateTime EndDate)
+{
+    // Handle project extension date logic if required
+    UpdateProjectDate(empId,projectCode, EndDate);
+    // Redirect back to the same page after deletion
+    return RedirectToPage();
+}
 
- private Employee GetEmployeeById(string empId, int projectCode)
+private void UpdateProjectDate(string empId,int projectCode, DateTime newDate)
+{
+     if (!System.IO.File.Exists(employeeFilePath))
+    {
+        Console.WriteLine("Project file does not exist.");
+        return; // Handle or log the case where file doesn't exist
+    }
+
+    try
+    {
+        using (var package = new ExcelPackage(new FileInfo(employeeFilePath)))
         {
-            var employees = GetAllEmployees();
-            return employees.FirstOrDefault(emp => emp.EmpId == empId && emp.ProjectCode == projectCode);
-        }
-
-        
-
-              private DateTime ParseDate(string dateString)
+            var worksheet = package.Workbook.Worksheets["Employees"];
+            if (worksheet != null)
             {
-                if (DateTime.TryParse(dateString, out var date))
+                if (!string.IsNullOrEmpty(empId)) // If editing, update the existing record
                 {
-                    return date;
+                    int existingRow = GetEmployeeRow(worksheet, empId,projectCode);
+                    if (existingRow != -1)
+                    {
+                     // Assuming the EndDate column is the 5th column (adjust index if needed)
+                        worksheet.Cells[existingRow, 133].Value = newDate.ToString("dd-MM-yyyy");
+                               
+                                
+                    }
                 }
-                return DateTime.MinValue; // Default value for invalid or missing dates
+
+                    package.Save();
             }
+             else
+            {
+                Console.WriteLine("Projects worksheet not found in the Excel file.");
+            }
+            }
+        }
+        catch (Exception ex)
+        {
+                // Handle exception during Excel manipulation
+                Console.WriteLine($"Error updating project end date: {ex.Message}");
+        }
+    }
+
+        private int GetEmployeeRow(ExcelWorksheet worksheet, string empId, int projectCode)
+        {
+            var rowCount = worksheet.Dimension?.Rows ?? 6;
+            for (int row = 6; row <= rowCount; row++)
+            {
+                if (worksheet.Cells[row, 15].Text == empId && worksheet.Cells[row, 7].Text == projectCode.ToString())
+                {
+                    return row; // Row number where match is found
+                }
+            }
+            return -1;
+        }
+        private DateTime ParseDate(string dateString)
+        {
+            if (DateTime.TryParse(dateString, out var date))
+            {
+                return date;
+            }
+            return DateTime.MinValue; // Default value for invalid or missing dates
+        }
 
         private int ParseInt(string numberString)
         {

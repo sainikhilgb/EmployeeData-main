@@ -87,13 +87,54 @@
                                 <button type="submit" class="btn btn-primary" >Edit</button>
                         </form>
 
-                        <form method="post" asp-page-handler="Delete" asp-route-empId="@employee.EmpId" asp-route-projectCode="@employee.ProjectCode" style="display:inline;">
-                        <button type="submit" 
-                                class="btn @(employee.IsActiveInProject == "Y" ? "btn-warning" : "btn-success")" 
-                                onclick="return confirm('Are you sure you want to @(employee.IsActiveInProject == "Y" ? "deactivate" : "activate") this project?')">
+                        <button type="submit" onclick="openConfirmationModal('@employee.AltriaEnddate.ToString("dd-MM-yyy")', '@employee.IsActiveInProject')"
+                                class="btn @(employee.IsActiveInProject == "Y" ? "btn-warning" : "btn-success")" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                             @(employee.IsActiveInProject == "Y" ? "Deactivate" : "Activate")
                         </button>
-                        </form>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Active/Deactivate</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                            <form method="post" asp-page-handler="Delete" asp-route-empId="@employee.EmpId" asp-route-projectCode="@employee.ProjectCode">
+                                <div class="input-box col-3">
+                                    <label for="AltriaEnddate">Altria End date</label>
+                                    <input id="AltriaEnddate" name="projectExtensionDate" asp-for="@employee.AltriaEnddate" type="date" onload="getDate()" class="form-control date-field"/>
+                                    <span asp-validation-for="@employee.AltriaEnddate" class="text-danger"></span>
+                                </div>
+                                    
+                                    <div class="form-group col-3">
+                                    <label>Active in Project:</label>
+                                    <div class="row">
+
+                                        <input type="radio" id="activeYes" class="col-3 custom-radio" name="actionType" value="Y" asp-for="@employee.IsActiveInProject" />
+                                        <label  for="activeYes" class="col-3">Yes</label>
+                                    </div>
+                                    
+                                    <div class="row">
+
+                                        <input type="radio" id="activeNo" class="col-3 custom-radio" name="actionType" value="N" asp-for="@employee.IsActiveInProject" />
+                                        <label for="activeNo" class="col-3">No</label>
+                                    </div>
+                                    
+                                    <span asp-validation-for="@employee.IsActiveInProject" class="text-danger"></span>
+                                    
+                                </div>
+                          <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                           </div>
+                            </form>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
                         </td>
                     </tr>
                 }
@@ -219,13 +260,40 @@
                          <form method="get" asp-page="/Registration/Registration" asp-route-empId="@employee.EmpId" style="display:inline;">
                                 <button type="submit" class="btn btn-primary" >Edit</button>
                         </form> 
-                        <form method="post" asp-page-handler="Delete" asp-route-empId="@employee.EmpId" asp-route-projectCode="@employee.ProjectCode" style="display:inline;">
-                        <button type="submit" 
-                                class="btn @(employee.IsActiveInProject == "Y" ? "btn-warning" : "btn-success")" 
-                                onclick="return confirm('Are you sure you want to @(employee.IsActiveInProject == "Y" ? "deactivate" : "activate") this project?')">
+                        
+                        <button type="submit" onclick="openConfirmation('@employee.AltriaEnddate.ToString("dd-MM-yyy")', '@employee.IsActiveInProject')"
+                                class="btn @(employee.IsActiveInProject == "Y" ? "btn-warning" : "btn-success")" data-bs-toggle="modal" data-bs-target="#staticdrop">
                             @(employee.IsActiveInProject == "Y" ? "Deactivate" : "Activate")
                         </button>
-                        </form>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="staticdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticdropLabel">Project End Date</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Update the Project End date</p>
+                            <form method="post" asp-page-handler="Update" asp-route-empId="@employee.EmpId" asp-route-projectCode="@employee.ProjectCode">
+                                <div class="input-box col-3">
+                                    <label for="EndDate">End Date</label>
+                                    <input id="EndDate" name="EndDate" asp-for="@employee.EndDate" type="date" class="form-control date-field" />
+                                    <span asp-validation-for="@employee.EndDate" class="text-danger"></span>
+                                </div>
+                                    
+                                    
+                          <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                           </div>
+                            </form>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+
                         </td>
                     </tr>
                 }

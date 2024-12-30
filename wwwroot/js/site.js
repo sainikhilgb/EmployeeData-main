@@ -126,4 +126,29 @@ function fillAllValues(selectedDropdown) {
         document.getElementById("MonthlyPrice").value = ""; 
     }
 }
+
+function openConfirmationModal(endDate, isActive) {
+    // Populate modal fields
+   
+    console.log(isActive,endDate)
+
+    // Populate radio buttons for IsActiveInProject
+    if (isActive === "Y") {
+        document.getElementById('activeYes').checked = true;
+    } else if (isActive === "N") {
+        document.getElementById('activeNo').checked = true;
+    }
+
+    // Populate the date field for AltriaEnddate
+    document.getElementById('AltriaEnddate').value = endDate.ToString("dd-MM-yyy");
+
+}
+
+function openConfirmation(endDate) {
+
+
+    // Populate the date field for AltriaEnddate
+    document.getElementById('EndDate').value = endDate.ToString("dd-MM-yyy");
+
+}
  
