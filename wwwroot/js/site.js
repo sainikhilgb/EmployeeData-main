@@ -106,26 +106,24 @@ function fillAllValues(selectedDropdown) {
     }
   }
 
+// const monthlyPrice = cor * offshore;
 
+            // document.getElementById("MonthlyPrice").value = monthlyPrice.toFixed(2);
   function calculateMonthlyPrice() {
     const corInput = document.getElementById("COR");
     const cor = parseFloat(corInput.value);
-    const onshoreRate = 160; // Replace with your actual onshore rate
-    const offshore = 180;
-    const loc = document.getElementById("location");
-    if (!isNaN(cor)) {
-        if(loc === "onshore"){
-            const monthlyPrice = cor * onshoreRate;
-            document.getElementById("MonthlyPrice").value = monthlyPrice.toFixed(2); 
+    const loc = document.getElementById("location").value;
+   
+    $.ajax({
+        url: "/Registration/Registration",
+        data: { handler: 'MonthlyPrice', COR: cor,location:loc },
+        type: "GET", // Or "POST" if needed
+        success: function(GlobalGrade) {
+            $("#MonthlyPrice").val(GlobalGrade);
+        },
+    });
+            
         }
-        else{
-            const monthlyPrice = cor * offshore;
-            document.getElementById("MonthlyPrice").value = monthlyPrice.toFixed(2);
-        }
-    } else {
-        document.getElementById("MonthlyPrice").value = ""; 
-    }
-}
 
 function openConfirmationModal(endDate, isActive) {
     // Populate modal fields
@@ -149,6 +147,11 @@ function openConfirmation(endDate) {
 
     // Populate the date field for AltriaEnddate
     document.getElementById('EndDate').value = endDate.ToString("dd-MM-yyy");
+
+}
+function logout()
+{
+    window.location.href = "/Logout";
 
 }
  

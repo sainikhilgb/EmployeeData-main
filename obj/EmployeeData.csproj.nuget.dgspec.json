@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\EmployeeData.csproj": {}
+    "C:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\EmployeeData.csproj": {}
   },
   "projects": {
-    "c:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\EmployeeData.csproj": {
+    "C:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\EmployeeData.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\EmployeeData.csproj",
+        "projectUniqueName": "C:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\EmployeeData.csproj",
         "projectName": "EmployeeData",
-        "projectPath": "c:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\EmployeeData.csproj",
+        "projectPath": "C:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\EmployeeData.csproj",
         "packagesPath": "C:\\Users\\sgodlave\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\obj\\",
+        "outputPath": "C:\\Users\\sgodlave\\OneDrive - Capgemini\\Documents\\DotNet\\EmployeeData-main\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\sgodlave\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -48,6 +48,22 @@
             "EPPlus": {
               "target": "Package",
               "version": "[7.5.1, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.12, )"
+            },
+            "Microsoft.IdentityModel.Tokens": {
+              "target": "Package",
+              "version": "[8.3.1, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[7.1.2, )"
             }
           },
           "imports": [
@@ -69,7 +85,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.404/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.405/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

@@ -3,18 +3,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using OfficeOpenXml;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using EmployeeData.Pages.Roles;
 
 namespace EmployeeData.Pages.EmployeeList
 {
-    public class EmployeeList : PageModel
+    public class EmployeeList : BasePageModel
     {
         [BindProperty]
         public Employee employees { get; set; } = new Employee();
-        
-        [BindProperty]
 
+        [BindProperty]
+        public Users users { get; set; } = new Users();
+
+        [BindProperty]
         public List<SelectListItem> GradeOptions { get; set; }
-         public List<SelectListItem> GlobalGradeOptions { get; set; }
+        public List<SelectListItem> GlobalGradeOptions { get; set; }
         public List<SelectListItem> BUOptions { get; set; }
         public List<SelectListItem> BGVOptions { get; set; }
         public List<SelectListItem> ProjectCodeOptions { get; set; }
@@ -28,51 +31,51 @@ namespace EmployeeData.Pages.EmployeeList
         public string SearchTerm { get; set; }
 
         public List<Employee> Employees { get; set; } = new List<Employee>();
-       
+
         private readonly string employeeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeData.xlsx");
 
         private Dictionary<string, string> projectCodeToNameMapping = new Dictionary<string, string>();
 
-    
+
 
 
         // Method to load Employee and Project details from Excel
-    public string Message { get; set; }
-       public void OnGet()
-    {
-        
-        LoadDropdownOptions();
-        LoadEmployeeData();
-
-        // If there's a search term, apply the filter to search across all rows
-        if (!string.IsNullOrEmpty(SearchTerm))
+        public string Message { get; set; }
+        public void OnGet()
         {
-            // Filter employees based on EmpId, Email, or ProjectCode
-            var filteredEmployees = Employees
-            .Where(emp => emp.EmpId.Contains(SearchTerm)
-            || emp.Email.Contains(SearchTerm)
-            || emp.ProjectCode.ToString().Contains(SearchTerm)) 
-            .ToList();
-            if (filteredEmployees.Any())
+
+            LoadDropdownOptions();
+            LoadEmployeeData();
+
+            // If there's a search term, apply the filter to search across all rows
+            if (!string.IsNullOrEmpty(SearchTerm))
             {
-                Employees = filteredEmployees; // Update the list with filtered employees
+                // Filter employees based on EmpId, Email, or ProjectCode
+                var filteredEmployees = Employees
+                .Where(emp => emp.EmpId.Contains(SearchTerm)
+                || emp.Email.Contains(SearchTerm)
+                || emp.ProjectCode.ToString().Contains(SearchTerm))
+                .ToList();
+                if (filteredEmployees.Any())
+                {
+                    Employees = filteredEmployees; // Update the list with filtered employees
+                }
+                else
+                {
+                    Message = $"No employee data is available for the provided {SearchTerm}.";
+                    Employees = new List<Employee>(); // Empty list when no matches are found
+                }
             }
             else
             {
-                Message = "No employee data is available for the provided search term.";
-                Employees = new List<Employee>(); // Empty list when no matches are found
+                // Display only the top 20 employees when no search term is provided
+                Employees = Employees.Take(20).ToList();
             }
         }
-        else
-        {
-            // Display only the top 20 employees when no search term is provided
-            Employees = Employees.Take(20).ToList();
-        }
-    }
 
-        
 
-         
+
+
 
         private void LoadDropdownOptions()
         {
@@ -111,7 +114,7 @@ namespace EmployeeData.Pages.EmployeeList
                         var globalgrade = worksheet.Cells[row, 9]?.Text?.Trim();
                         var bgv = worksheet.Cells[row, 10]?.Text?.Trim();
 
-                        
+
                         if (!string.IsNullOrWhiteSpace(projectcode) && !string.IsNullOrWhiteSpace(projectname))
                         {
                             ProjectCodeOptions.Add(new SelectListItem { Value = projectcode, Text = projectcode });
@@ -134,7 +137,8 @@ namespace EmployeeData.Pages.EmployeeList
                             TowerOptions.Add(new SelectListItem { Value = tower, Text = tower });
                         }
 
-                        if (!string.IsNullOrWhiteSpace(grade)){ 
+                        if (!string.IsNullOrWhiteSpace(grade))
+                        {
 
                             GradeOptions.Add(new SelectListItem { Value = grade, Text = grade });
                         }
@@ -144,26 +148,29 @@ namespace EmployeeData.Pages.EmployeeList
                         if (!string.IsNullOrWhiteSpace(bgv))
                             BGVOptions.Add(new SelectListItem { Value = bgv, Text = bgv });
 
-                         if (!string.IsNullOrWhiteSpace(globalgrade)){ 
+                        if (!string.IsNullOrWhiteSpace(globalgrade))
+                        {
 
                             GlobalGradeOptions.Add(new SelectListItem { Value = globalgrade, Text = globalgrade });
                         }
-                        
+
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Worksheet 'Dropdown' not found in the dropdown file.");
+                    ModelState.AddModelError("", "Worksheet 'Dropdown' not found in the Excel file.");
+                    ViewData["ErrorMessage"]= $"Worksheet 'Dropdown' not found in the Excel file.";
                 }
             }
             else
             {
-                ModelState.AddModelError("", $"Dropdown file not found at {employeeFilePath}.");
+                ModelState.AddModelError("", $"Excel file not found at {employeeFilePath}.");
+                ViewData["ErrorMessage"]= "Excel file not found.";
             }
         }
 
 
-       
+
         private void LoadEmployeeData()
         {
             if (System.IO.File.Exists(employeeFilePath))
@@ -210,7 +217,7 @@ namespace EmployeeData.Pages.EmployeeList
                             Location = worksheet.Cells[row, 22].Text,
                             OffshoreCity = worksheet.Cells[row, 23].Text,
                             OffshoreBackup = worksheet.Cells[row, 34].Text,
-                            AltriaPODOwner = worksheet.Cells[row, 12].Text, 
+                            AltriaPODOwner = worksheet.Cells[row, 12].Text,
                             ALCSDirector = worksheet.Cells[row, 13].Text,
                             Type = worksheet.Cells[row, 1].Text,
                             Tower = worksheet.Cells[row, 2].Text,
@@ -221,56 +228,57 @@ namespace EmployeeData.Pages.EmployeeList
                             Group = worksheet.Cells[row, 62].Text,
                             RoleinPOD = worksheet.Cells[row, 25].Text,
                             MonthlyPrice = ParseDecimal(worksheet.Cells[row, 63].Text),
-                            January = worksheet.Cells[row,36].Text,
-                            February = worksheet.Cells[row,37].Text,
-                            March = worksheet.Cells[row,38].Text,
-                            April = worksheet.Cells[row,39].Text,
-                            May = worksheet.Cells[row,40].Text,
-                            June = worksheet.Cells[row,41].Text,
-                            July = worksheet.Cells[row,42].Text,
-                            August = worksheet.Cells[row,43].Text,
-                            September = worksheet.Cells[row,44].Text,
-                            October = worksheet.Cells[row,45].Text,
-                            November = worksheet.Cells[row,46].Text,
-                            December =worksheet.Cells[row,47].Text,
-                            JanFin =worksheet.Cells[row,64].Text,
-                            FebFin =worksheet.Cells[row,65].Text,
-                             MarFin =worksheet.Cells[row,66].Text,
-                             AprFin =worksheet.Cells[row,67].Text,
-                             MayFin =worksheet.Cells[row,68].Text,
-                             JuneFin =worksheet.Cells[row,69].Text,
-                             JulyFin =worksheet.Cells[row,70].Text,
-                             AugFin =worksheet.Cells[row,71].Text,
-                             SepFin =worksheet.Cells[row,72].Text,
-                             OctFin =worksheet.Cells[row,73].Text,
-                             NovFin =worksheet.Cells[row,74].Text,
-                             DecFin =worksheet.Cells[row,75].Text,
-                        
-                    };
+                            January = worksheet.Cells[row, 36].Text,
+                            February = worksheet.Cells[row, 37].Text,
+                            March = worksheet.Cells[row, 38].Text,
+                            April = worksheet.Cells[row, 39].Text,
+                            May = worksheet.Cells[row, 40].Text,
+                            June = worksheet.Cells[row, 41].Text,
+                            July = worksheet.Cells[row, 42].Text,
+                            August = worksheet.Cells[row, 43].Text,
+                            September = worksheet.Cells[row, 44].Text,
+                            October = worksheet.Cells[row, 45].Text,
+                            November = worksheet.Cells[row, 46].Text,
+                            December = worksheet.Cells[row, 47].Text,
+                            JanFin = worksheet.Cells[row, 64].Text,
+                            FebFin = worksheet.Cells[row, 65].Text,
+                            MarFin = worksheet.Cells[row, 66].Text,
+                            AprFin = worksheet.Cells[row, 67].Text,
+                            MayFin = worksheet.Cells[row, 68].Text,
+                            JuneFin = worksheet.Cells[row, 69].Text,
+                            JulyFin = worksheet.Cells[row, 70].Text,
+                            AugFin = worksheet.Cells[row, 71].Text,
+                            SepFin = worksheet.Cells[row, 72].Text,
+                            OctFin = worksheet.Cells[row, 73].Text,
+                            NovFin = worksheet.Cells[row, 74].Text,
+                            DecFin = worksheet.Cells[row, 75].Text,
+
+                        };
 
                         Employees.Add(employee);
 
-                        
+
                     }
                 }
             }
         }
-        
 
-// Method to delete an employee
-public IActionResult OnPostDelete(string empId,int projectCode, string actionType, DateTime projectExtensionDate)
-{
-    // Handle project extension date logic if required
-    ExtendProjectDate(empId,projectCode, projectExtensionDate,actionType);
-    // Redirect back to the same page after deletion
-    return RedirectToPage();
-}
 
-        private void ExtendProjectDate(string empId,int projectCode, DateTime newDate,string actionType)
+        // Method to delete an employee
+        public IActionResult OnPostDelete(string empId, int projectCode, string actionType, DateTime projectExtensionDate)
+        {
+            // Handle project extension date logic if required
+            ExtendProjectDate(empId, projectCode, projectExtensionDate, actionType);
+            // Redirect back to the same page after deletion
+            return RedirectToPage();
+        }
+
+        private void ExtendProjectDate(string empId, int projectCode, DateTime newDate, string actionType)
         {
             if (!System.IO.File.Exists(employeeFilePath))
             {
-                Console.WriteLine("Project file does not exist.");
+                ModelState.AddModelError("", $"Excel file not found at {employeeFilePath}.");
+                ViewData["ErrorMessage"]= $"Excel file not found.";
                 return; // Handle or log the case where file doesn't exist
             }
 
@@ -282,14 +290,14 @@ public IActionResult OnPostDelete(string empId,int projectCode, string actionTyp
                     if (worksheet != null)
                     {
                         if (!string.IsNullOrEmpty(empId)) // If editing, update the existing record
+                        {
+                            int existingRow = GetEmployeeRow(worksheet, empId, projectCode);
+                            if (existingRow != -1)
                             {
-                                int existingRow = GetEmployeeRow(worksheet, empId,projectCode);
-                                if (existingRow != -1)
-                                {
                                 // Assuming the EndDate column is the 5th column (adjust index if needed)
                                 worksheet.Cells[existingRow, 129].Value = newDate.ToString("dd-MM-yyyy");
                                 worksheet.Cells[existingRow, 20].Value = actionType;
-                                
+
                             }
                         }
 
@@ -297,68 +305,76 @@ public IActionResult OnPostDelete(string empId,int projectCode, string actionTyp
                     }
                     else
                     {
-                        Console.WriteLine("Projects worksheet not found in the Excel file.");
+                        
+                        ModelState.AddModelError("", "Worksheet 'Employees' not found in the Excel file.");
+                        ViewData["ErrorMessage"]= $"Worksheet 'Employees' not found in the Excel file.";
                     }
                 }
             }
             catch (Exception ex)
             {
                 // Handle exception during Excel manipulation
-                Console.WriteLine($"Error updating project end date: {ex.Message}");
+                ModelState.AddModelError("", $"Error updating project end date: {ex.Message}");
+                ViewData["ErrorMessage"]= $"Error updating project end date: {ex.Message}";
+                
             }
         }
 
-        
-// Method to delete an employee
-public IActionResult OnPostUpdate(string empId,int projectCode, DateTime EndDate)
-{
-    // Handle project extension date logic if required
-    UpdateProjectDate(empId,projectCode, EndDate);
-    // Redirect back to the same page after deletion
-    return RedirectToPage();
-}
 
-private void UpdateProjectDate(string empId,int projectCode, DateTime newDate)
-{
-     if (!System.IO.File.Exists(employeeFilePath))
-    {
-        Console.WriteLine("Project file does not exist.");
-        return; // Handle or log the case where file doesn't exist
-    }
-
-    try
-    {
-        using (var package = new ExcelPackage(new FileInfo(employeeFilePath)))
+        // Method to delete an employee
+        public IActionResult OnPostUpdate(string empId, int projectCode, DateTime EndDate)
         {
-            var worksheet = package.Workbook.Worksheets["Employees"];
-            if (worksheet != null)
+            // Handle project extension date logic if required
+            UpdateProjectDate(empId, projectCode, EndDate);
+            // Redirect back to the same page after deletion
+            return RedirectToPage();
+        }
+
+        private void UpdateProjectDate(string empId, int projectCode, DateTime newDate)
+        {
+            if (!System.IO.File.Exists(employeeFilePath))
             {
-                if (!string.IsNullOrEmpty(empId)) // If editing, update the existing record
+                ModelState.AddModelError("", $"Excel file not found at {employeeFilePath}.");
+                ViewData["ErrorMessage"]= $"Excel file not found.";
+                return; // Handle or log the case where file doesn't exist
+            }
+
+            try
+            {
+                using (var package = new ExcelPackage(new FileInfo(employeeFilePath)))
                 {
-                    int existingRow = GetEmployeeRow(worksheet, empId,projectCode);
-                    if (existingRow != -1)
+                    var worksheet = package.Workbook.Worksheets["Employees"];
+                    if (worksheet != null)
                     {
-                     // Assuming the EndDate column is the 5th column (adjust index if needed)
-                        worksheet.Cells[existingRow, 133].Value = newDate.ToString("dd-MM-yyyy");
-                               
-                                
+                        if (!string.IsNullOrEmpty(empId)) // If editing, update the existing record
+                        {
+                            int existingRow = GetEmployeeRow(worksheet, empId, projectCode);
+                            if (existingRow != -1)
+                            {
+                                // Assuming the EndDate column is the 5th column (adjust index if needed)
+                                worksheet.Cells[existingRow, 133].Value = newDate.ToString("dd-MM-yyyy");
+
+
+                            }
+                        }
+
+                        package.Save();
+                    }
+                    else
+                    {
+                    
+                        ModelState.AddModelError("", "worksheet 'Employees' not found in the Excel file.");
+                        ViewData["ErrorMessage"]= "worksheet 'Employees' not found in the Excel file.";
                     }
                 }
-
-                    package.Save();
             }
-             else
+            catch (Exception ex)
             {
-                Console.WriteLine("Projects worksheet not found in the Excel file.");
-            }
-            }
-        }
-        catch (Exception ex)
-        {
                 // Handle exception during Excel manipulation
-                Console.WriteLine($"Error updating project end date: {ex.Message}");
+                ModelState.AddModelError("", $"Error updating project end date: {ex.Message}");
+                ViewData["ErrorMessage"]= $"Error updating project end date: {ex.Message}";
+            }
         }
-    }
 
         private int GetEmployeeRow(ExcelWorksheet worksheet, string empId, int projectCode)
         {
@@ -399,6 +415,6 @@ private void UpdateProjectDate(string empId,int projectCode, DateTime newDate)
             return 0; // Default value for invalid or missing numbers
         }
 
-        
+
     }
 }

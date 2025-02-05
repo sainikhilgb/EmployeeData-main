@@ -1,45 +1,43 @@
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 
-// Configure CORS
-builder.Services.AddCors(options =>
+// Add session services with configuration.
+builder.Services.AddSession(options =>
 {
-  options.AddPolicy("AllowMyOrigin",
-    builder =>
-    {
-      builder.WithOrigins(
-        "http://localhost:5116/Registration/RegistrationployeeList?handler=ProjectName&projectCode={id}"
-      )
-      .AllowAnyMethod()
-      .AllowAnyHeader();
-    });
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout duration
+    options.Cookie.HttpOnly = true;                // Secure session cookie
+    options.Cookie.IsEssential = true;             // Required for GDPR compliance
 });
 
-
+// Build the app.
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.UseExceptionHandler("/Error"); // Use custom error handling in production
+    app.UseHsts();                     // Enforce strict transport security (HSTS)
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseHttpsRedirection(); // Redirect HTTP to HTTPS
+app.UseStaticFiles();      // Serve static files (e.g., CSS, JS, images)
 
-app.UseRouting();
+app.UseRouting();          // Enable endpoint routing
 
-app.UseCors("AllowMyOrigin"); // Add CORS middleware after UseRouting
+app.UseSession();          // Enable session handling (must come before authorization)
 
-app.UseAuthorization();
-
-app.MapRazorPages();
-
+// Add WebSocket support (if required for your app).
 app.UseWebSockets();
 
+// Authorization middleware (if you have authentication logic).
+app.UseAuthorization();
+app.MapControllers();
 
+// Map Razor Pages to endpoints.
+app.MapRazorPages();
+
+// Run the application.
 app.Run();

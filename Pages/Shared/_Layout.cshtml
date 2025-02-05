@@ -7,31 +7,42 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EmployeeData.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/User.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     
 </head>
 <body id="Home">
     <div class=" icon-bar h-5">
-    <div id="capgemini"  class="col-1"><img  style="height: 5rem;"alt="Capgemini Logo" src="~/Images/Capg.png"/></div> 
     
+        <div id="capgemini" class="col-1">
+            <img style="height: 5rem;" alt="Capgemini Logo" src="~/Images/Capg.png" />
+        </div> 
+       @if (Context.Session.GetString("Username") != null)
+{        
   <a class=" col-3" href="/Registration/Registration" ><i class="fa fa-home"><span class="fa-label">Employee Registration</span> </i></a>
   <a class="col-3" href="/EmployeeList/EmployeeList"><i class="fa fa-users" aria-hidden="true"> <span class="fa-label">View Employees</span></i></a> 
-   <a class="col-3" href="https://app.powerbi.com/links/SUTiDvnw4T?ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61&pbi_source=linkShare" target="_blank">
+   <a class="col-2" href="https://app.powerbi.com/links/SUTiDvnw4T?ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61&pbi_source=linkShare" target="_blank">
     <i class="fa fa-bar-chart"></i>
     <span class="fa-label">Dashboard</span>
 </a>
-
+}  
+@if (Context.Session.GetString("Username") != null)
+{
     
+    <button type="submit" class="btn btn-primary" onclick="logout()">Logout</button>
+
+}
   <div id="altria" class="col-1 "><img alt="Altria Logo" src="~/Images/Altria.png" style="height: 5rem;"/></div>
 </div>
+
      
-     <div class="container">
+     <div class="container ">
         <main role="main" >
              @RenderBody() 
-            
+      
         </main>
      </div>
    

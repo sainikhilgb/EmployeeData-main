@@ -1,64 +1,73 @@
 @page
 @using EmployeeData.Models
+@using Microsoft.EntityFrameworkCore
 @model EmployeeData.Pages.EmployeeList.EmployeeList
 @{
-    ViewData["Title"] =  "Employee List" ;
+    ViewData["Title"] = "Employee List";
+    @if (ViewData.ContainsKey("ErrorMessage")) 
+    {
+        <div class="alert alert-danger">
+            @ViewData["ErrorMessage"]
+        </div>
+    }
 }
-<!-- Search Form -->
-<form method="get" class="search-form row">
-<div class=" row">
 <div class=" m-4">
     <h2 class="section-header">Employee Details</h2>
 </div>
-  
-    
-    <div class="form-group col-4">
-        <label for="SearchTerm">Search:</label>
-        <input type="text" id="SearchTerm" name="SearchTerm" class="form-control" value="@Model.SearchTerm" placeholder="Enter search term" />
-    </div>
-    @if (!string.IsNullOrEmpty(Model.Message))
-    {
-        <div class="alert alert-warning">@Model.Message</div>
-    }
-    <button id="search-btn"type="submit" class="btn btn-primary mt-4">Search</button>
-    
-</form>
-</div>
+<!-- Search Form -->
+<form method="get" class="search-form row g-3">
+    <div class="row">
 
-<!-- Display No Results Found Message if Employees List is Empty -->
-@if (Model.Employees.Count == 0 && !string.IsNullOrEmpty(Model.SearchTerm))
-{
-    <p class="text-danger">No employee data is available for the provided Employee ID, or the ID is invalid.</p>
-}
+        <div class="form-group col-md-4 ">
+            <label for="SearchTerm">Search:</label>
+            <input type="text" id="SearchTerm" name="SearchTerm" class="form-control " value="@Model.SearchTerm"
+            placeholder="Enter search term" />
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Message) && !string.IsNullOrEmpty(Model.SearchTerm))
+        {
+            <div class="alert alert-warning col-12">@Model.Message</div>
+        }
+
+        <div class="col-7 m-2">
+            <button id="search-btn" type="submit" class="btn btn-primary mt-2">Search</button>
+        </div>
+
+    </div>
+</form>
+
+
 <!-- Employee Table -->
-<div class="scrollable row">
-<table class="table table-striped table-bordered">
-    <thead class="thead-dark">
-        <tr>
-            <th>Employee Id</th>
-            <th>GGID</th>
-            <th>Resource</th>
-            <th>Email</th>
-            <th>Gender</th>
-            <th>Date Of Hire</th>
-            <th>Grade</th>
-            <th>Global Grade</th>
-            <th>BU</th>
-            <th>Is Active In Project</th>
-            <th>Overall Experience</th>
-            <th>Skills</th>
-            <th>Certificates</th>
-            <th>Altria  Start date</th>
-            <th>Altria  End date</th>
-            <th>BGV Status</th>
-            <th>BGV Completion Date</th>
-            <th>VISA Availability</th>
-            <th>VISA Type</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model.Employees != null)
+<div class="scrollable row ">
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Employee Id</th>
+                <th>GGID</th>
+                <th>Resource</th>
+                <th>Email</th>
+                <th>Gender</th>
+                <th>Date Of Hire</th>
+                <th>Grade</th>
+                <th>Global Grade</th>
+                <th>BU</th>
+                <th>Is Active In Project</th>
+                <th>Overall Experience</th>
+                <th>Skills</th>
+                <th>Certificates</th>
+                <th>Altria Start date</th>
+                <th>Altria End date</th>
+                <th>BGV Status</th>
+                <th>BGV Completion Date</th>
+                <th>VISA Availability</th>
+                <th>VISA Type</th>
+                @if (HttpContext.Session.GetString("Role") == "Admin"){
+                <th>Actions</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Employees != null)
             {
                 @foreach (var employee in Model.Employees)
                 {
@@ -81,72 +90,88 @@
                         <td>@employee.BGVStatus</td>
                         <td>@employee.BGVCompletionDate.ToString("dd-MM-yyy")</td>
                         <td>@employee.VISAStatus</td>
-                         <td>@employee.VISAType</td>
+                        <td>@employee.VISAType</td>
                         <td>
-                        <form method="get" asp-page="/Registration/Registration" asp-route-empId="@employee.EmpId" style="display:inline;" >
-                                <button type="submit" class="btn btn-primary" >Edit</button>
-                        </form>
+                            @if (HttpContext.Session.GetString("Role") == "Admin"){
 
-                        <button type="submit" onclick="openConfirmationModal('@employee.AltriaEnddate.ToString("dd-MM-yyy")', '@employee.IsActiveInProject')"
-                                class="btn @(employee.IsActiveInProject == "Y" ? "btn-warning" : "btn-success")" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                            @(employee.IsActiveInProject == "Y" ? "Deactivate" : "Activate")
-                        </button>
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Active/Deactivate</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                            <form method="post" asp-page-handler="Delete" asp-route-empId="@employee.EmpId" asp-route-projectCode="@employee.ProjectCode">
-                                <div class="input-box col-3">
-                                    <label for="AltriaEnddate">Altria End date</label>
-                                    <input id="AltriaEnddate" name="projectExtensionDate" asp-for="@employee.AltriaEnddate" type="date" onload="getDate()" class="form-control date-field"/>
-                                    <span asp-validation-for="@employee.AltriaEnddate" class="text-danger"></span>
-                                </div>
-                                    
-                                    <div class="form-group col-3">
-                                    <label>Active in Project:</label>
-                                    <div class="row">
-
-                                        <input type="radio" id="activeYes" class="col-3 custom-radio" name="actionType" value="Y" asp-for="@employee.IsActiveInProject" />
-                                        <label  for="activeYes" class="col-3">Yes</label>
-                                    </div>
-                                    
-                                    <div class="row">
-
-                                        <input type="radio" id="activeNo" class="col-3 custom-radio" name="actionType" value="N" asp-for="@employee.IsActiveInProject" />
-                                        <label for="activeNo" class="col-3">No</label>
-                                    </div>
-                                    
-                                    <span asp-validation-for="@employee.IsActiveInProject" class="text-danger"></span>
-                                    
-                                </div>
-                          <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                           </div>
+                            <form method="get" asp-page="/Registration/Registration" asp-route-empId="@employee.EmpId"
+                                style="display:inline;">
+                                <button type="submit" class="btn btn-primary">Edit</button>
                             </form>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
 
+                            <button type="submit"
+                                onclick="openConfirmationModal('@employee.AltriaEnddate.ToString("dd-MM-yyy")', '@employee.IsActiveInProject')"
+                                class="btn @(employee.IsActiveInProject == "Y" ? "btn-warning" : "btn-success")"
+                                data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                                @(employee.IsActiveInProject == "Y" ? "Deactivate" : "Activate")
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+                                tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Active/Deactivate</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="post" asp-page-handler="Delete" asp-route-empId="@employee.EmpId"
+                                                asp-route-projectCode="@employee.ProjectCode">
+                                                <div class="input-box col-3">
+                                                    <label for="AltriaEnddate">Altria End date</label>
+                                                    <input id="AltriaEnddate" name="projectExtensionDate"
+                                                        asp-for="@employee.AltriaEnddate" type="date" onload="getDate()"
+                                                        class="form-control date-field" />
+                                                    <span asp-validation-for="@employee.AltriaEnddate"
+                                                        class="text-danger"></span>
+                                                </div>
+
+                                                <div class="form-group col-3">
+                                                    <label>Active in Project:</label>
+                                                    <div class="row">
+
+                                                        <input type="radio" id="activeYes" class="col-3 custom-radio"
+                                                            name="actionType" value="Y" asp-for="@employee.IsActiveInProject" />
+                                                        <label for="activeYes" class="col-3">Yes</label>
+                                                    </div>
+
+                                                    <div class="row">
+
+                                                        <input type="radio" id="activeNo" class="col-3 custom-radio"
+                                                            name="actionType" value="N" asp-for="@employee.IsActiveInProject" />
+                                                        <label for="activeNo" class="col-3">No</label>
+                                                    </div>
+
+                                                    <span asp-validation-for="@employee.IsActiveInProject"
+                                                        class="text-danger"></span>
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            }
                         </td>
                     </tr>
                 }
-            }else
+            }
+            else
             {
                 <tr>
-                    <td  class="text-center">No employee details available.</td>
+                    <td class="text-center">No employee details available.</td>
                 </tr>
             }
-    </tbody>
-</table>
-<a id="register" href="/Registration/Registration"><i class="fa fa-user-plus" aria-hidden="true"> Register</i></a>
+        </tbody>
+    </table>
+    <a id="register" href="/Registration/Registration"><i class="fa fa-user-plus" aria-hidden="true"> Register</i></a>
 </div>
 
 
@@ -176,7 +201,7 @@
                 <th>COR</th>
                 <th>Group</th>
                 <th>Role in POD</th>
-                <th>Monthly Price</th> 
+                <th>Monthly Price</th>
                 <th>January</th>
                 <th>February</th>
                 <th>March</th>
@@ -201,12 +226,14 @@
                 <th>October</th>
                 <th>November</th>
                 <th>December</th>
+                @if (HttpContext.Session.GetString("Role") == "Admin"){
                 <th>Action</th>
+                }
             </tr>
         </thead>
 
         <tbody>
-            @if (Model.Employees != null )
+            @if (Model.Employees != null)
             {
                 @foreach (var employee in Model.Employees)
                 {
@@ -243,57 +270,68 @@
                         <td>@employee.October</td>
                         <td>@employee.November</td>
                         <td>@employee.December</td>
-                         <td>@employee.JanFin</td>
+                        <td>@employee.JanFin</td>
                         <td>@employee.FebFin</td>
                         <td>@employee.MarFin</td>
-                         <td>@employee.AprFin</td> 
+                        <td>@employee.AprFin</td>
                         <td>@employee.MayFin</td>
                         <td>@employee.JuneFin</td>
                         <td>@employee.JulyFin</td>
-                       <td>@employee.AugFin</td>
+                        <td>@employee.AugFin</td>
                         <td>@employee.SepFin</td>
                         <td>@employee.OctFin</td>
                         <td>@employee.NovFin</td>
-                        <td>@employee.DecFin</td> 
-                        
+                        <td>@employee.DecFin</td>
+
                         <td>
-                         <form method="get" asp-page="/Registration/Registration" asp-route-empId="@employee.EmpId" style="display:inline;">
-                                <button type="submit" class="btn btn-primary" >Edit</button>
-                        </form> 
-                        
-                        <button type="submit" onclick="openConfirmation('@employee.AltriaEnddate.ToString("dd-MM-yyy")', '@employee.IsActiveInProject')"
-                                class="btn @(employee.IsActiveInProject == "Y" ? "btn-warning" : "btn-success")" data-bs-toggle="modal" data-bs-target="#staticdrop">
-                            @(employee.IsActiveInProject == "Y" ? "Deactivate" : "Activate")
-                        </button>
+                              @if (HttpContext.Session.GetString("Role") == "Admin"){
 
-                        <!-- Modal -->
-                        <div class="modal fade" id="staticdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticdropLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="staticdropLabel">Project End Date</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <p>Update the Project End date</p>
-                            <form method="post" asp-page-handler="Update" asp-route-empId="@employee.EmpId" asp-route-projectCode="@employee.ProjectCode">
-                                <div class="input-box col-3">
-                                    <label for="EndDate">End Date</label>
-                                    <input id="EndDate" name="EndDate" asp-for="@employee.EndDate" type="date" class="form-control date-field" />
-                                    <span asp-validation-for="@employee.EndDate" class="text-danger"></span>
-                                </div>
-                                    
-                                    
-                          <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                           </div>
+                            <form method="get" asp-page="/Registration/Registration" asp-route-empId="@employee.EmpId"
+                                style="display:inline;">
+                                <button type="submit" class="btn btn-primary">Edit</button>
                             </form>
-                            </div>
-                            </div>
-                        </div>
-                        </div>
+                            
 
+                            <button type="submit"
+                                onclick="openConfirmation('@employee.AltriaEnddate.ToString("dd-MM-yyy")', '@employee.IsActiveInProject')"
+                                class="btn @(employee.IsActiveInProject == "Y" ? "btn-warning" : "btn-success")"
+                                data-bs-toggle="modal" data-bs-target="#staticdrop">
+                                @(employee.IsActiveInProject == "Y" ? "Deactivate" : "Activate")
+                            </button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="staticdrop" data-bs-backdrop="static" data-bs-keyboard="false"
+                                tabindex="-1" aria-labelledby="staticdropLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="staticdropLabel">Project End Date</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Update the Project End date</p>
+                                            <form method="post" asp-page-handler="Update" asp-route-empId="@employee.EmpId"
+                                                asp-route-projectCode="@employee.ProjectCode">
+                                                <div class="input-box col-3">
+                                                    <label for="EndDate">End Date</label>
+                                                    <input id="EndDate" name="EndDate" asp-for="@employee.EndDate" type="date"
+                                                        class="form-control date-field" />
+                                                    <span asp-validation-for="@employee.EndDate" class="text-danger"></span>
+                                                </div>
+
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            }
                         </td>
                     </tr>
                 }

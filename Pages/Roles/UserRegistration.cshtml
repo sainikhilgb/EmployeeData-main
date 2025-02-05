@@ -1,0 +1,39 @@
+﻿@page
+@model EmployeeData.Pages.Roles.UserRegistration
+@{
+    ViewData["Title"] = "User Registration";
+}
+
+<div class="vh-100 w-100 d-flex justify-content-center align-items-center bg-light ">
+    <div class="container col-lg-4 col-md-6 col-sm-10 shadow rounded p-4 bg-white">
+        <h2 class="text-center mb-3">Registration</h2>
+
+        <form method="post">
+            <div class="mb-3">
+                <label for="userName" class="form-label">User Name</label>
+                <input type="text" id="userName" name="userName" class="form-control" placeholder="Enter your username"
+                    value="@Model.users.UserName" />
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-control"
+                    placeholder="Enter your password" value="@Model.users.Password" />
+            </div>
+
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <select name="role" asp-for="users.Roles" class="form-select">
+                    <option value="">-- Select Role --</option>
+                    <option value="User">User</option>
+                    <option value="Admin">Admin </option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3">Submit</button>
+        </form>
+            <div class="text-center text-blue">
+                <a href="./Login" class="btn btn-secondary w-100">Login</a>
+            </div>
+    </div>
+</div>

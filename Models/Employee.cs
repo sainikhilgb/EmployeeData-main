@@ -10,6 +10,8 @@ namespace EmployeeData.Models
         [Required(ErrorMessage = "Please enter EmployeeId")]
         public string EmpId {get; set;}
         [Required(ErrorMessage = "Please enter GGID")]
+        [MinLength(8, ErrorMessage = "GGID has to be Minimum of 8 digits")]
+        [MaxLength(8, ErrorMessage = "GGID has to be Maximum of 8 digits")]
         public int GGID {get; set;}
 
         [Required(ErrorMessage = "Please enter your first name")]

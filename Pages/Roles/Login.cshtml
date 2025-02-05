@@ -1,0 +1,34 @@
+﻿@page
+@model EmployeeData.Pages.Roles.Login
+@{
+    ViewData["Title"] = "Login";
+ @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"] as string)) 
+    {
+        <div class="alert alert-danger">
+            @Model.ErrorMessage
+        </div>
+    }
+}
+<div class="vh-100 d-flex justify-content-center align-items-center  ">
+    <div class="container col-lg-4 col-md-6 col-sm-10 shadow rounded p-5 bg-white">
+        <h2 class="text-center mb-4">Login</h2>
+
+        <form method="post" asp-page-handler="Login">
+            <div class="mb-2">
+                <label for="userName" class="form-label">User Name</label>
+                <input type="text" id="userName" name="userName" class="form-control" placeholder="Enter your username" value="@Model.users.UserName" />
+            </div>
+
+            <div class="mb-2">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" value="@Model.users.Password" />
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+            
+            <div class="text-center text-blue">
+                <a href="./UserRegistration" class="btn btn-secondary w-100">Create Account</a>
+            </div>
+        </form>
+    </div>
+</div>

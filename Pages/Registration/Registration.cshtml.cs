@@ -1,4 +1,6 @@
+using System.Globalization;
 using EmployeeData.Models;
+using EmployeeData.Pages.Roles;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -7,14 +9,12 @@ using OfficeOpenXml;
 
 namespace EmployeeData.Pages.Registration
 {
-    public class Registration : PageModel
+    public class Registration : BasePageModel
     {
         private string employeeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeData.xlsx");
 
-
         [BindProperty]
         public Employee Employee { get; set; } = new Employee();
-
         public List<SelectListItem> GradeOptions { get; set; }
         public List<SelectListItem> GlobalGradeOptions { get; set; }
         public List<SelectListItem> BUOptions { get; set; }
@@ -32,6 +32,11 @@ namespace EmployeeData.Pages.Registration
         private Dictionary<string, string> projectCodeToNameMapping = new Dictionary<string, string>();
 
         private Dictionary<string, string> GradeToGlobalGrade = new Dictionary<string, string>();
+        private Dictionary<string, decimal> MonthlyHours = new Dictionary<string, decimal>();
+
+         string[] months = { "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12" };
+        decimal[] monthlyResults = new decimal[12];
+    
         private Dictionary<string, List<string>> ProjectCodeToPODMapping { get; set; } = new Dictionary<string, List<string>>();
 
 
@@ -39,7 +44,6 @@ namespace EmployeeData.Pages.Registration
         // OnGet to load dropdown options and initialize the form
         public IActionResult OnGet(string empId)
         {
-
             // Load dropdown options from the dropdown file
             LoadDropdownOptions();
             LoadProjectCodeToPODMapping();
@@ -72,6 +76,7 @@ namespace EmployeeData.Pages.Registration
         // OnPost to save a new employee record or update an existing one
         public async Task<IActionResult> OnPost()
         {
+            
             if (Employee.Certificates == "Others" && !string.IsNullOrWhiteSpace(Employee.OtherCertificate))
             {
                 // Set the custom certificate value if "Others" is selected
@@ -91,9 +96,6 @@ namespace EmployeeData.Pages.Registration
                 // Ensure ExcelPackage licensing
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-                // Define the file path
-                employeeFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeData.xlsx");
-
                 // Ensure directory exists
                 string directory = Path.GetDirectoryName(employeeFilePath);
                 if (!Directory.Exists(directory))
@@ -103,7 +105,7 @@ namespace EmployeeData.Pages.Registration
 
                 // Check if the file exists, or create a new one
                 bool isNewFile = !System.IO.File.Exists(employeeFilePath);
-                using var package = new ExcelPackage(new FileInfo(employeeFilePath));
+                var package = new ExcelPackage(new FileInfo(employeeFilePath));
 
                 // Load or create the worksheet
                 var worksheet = package.Workbook.Worksheets["Employees"];
@@ -184,22 +186,34 @@ namespace EmployeeData.Pages.Registration
                         worksheet.Cells[existingRow, 45].Value = Employee.October; // Column 45: October
                         worksheet.Cells[existingRow, 46].Value = Employee.November; // Column 46: November
                         worksheet.Cells[existingRow, 47].Value = Employee.December; // Column 47: December
-                
 
-                            worksheet.Cells[existingRow, 64].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.January)).ToString();
-                            worksheet.Cells[existingRow, 65].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.February)).ToString();
-                            worksheet.Cells[existingRow, 66].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.March)).ToString();
-                            worksheet.Cells[existingRow, 67].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.April)).ToString();
-                            worksheet.Cells[existingRow, 68].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.May)).ToString();
-                            worksheet.Cells[existingRow, 69].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.June)).ToString();
-                            worksheet.Cells[existingRow, 70].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.July)).ToString();
-                            worksheet.Cells[existingRow, 71].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.August)).ToString();
-                            worksheet.Cells[existingRow, 72].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.September)).ToString();
-                            worksheet.Cells[existingRow, 73].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.October)).ToString();
-                            worksheet.Cells[existingRow, 74].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.November)).ToString();
-                            worksheet.Cells[existingRow, 75].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.December)).ToString();
 
-                        
+                        for (int i = 0; i < months.Length; i++)
+                        {
+                                string month = months[i];
+                                
+                                string propertyName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(int.Parse(month));
+
+                                // Get property value using reflection
+                                decimal employeeValue;
+                                if (Decimal.TryParse(Employee.GetType().GetProperty(propertyName)?.GetValue(Employee)?.ToString(), 
+                                                    NumberStyles.Any, CultureInfo.InvariantCulture, out employeeValue))
+                                {
+                            
+                                    monthlyResults[i] = MonthlyHours.GetValueOrDefault(month) * employeeValue;
+                                }
+                                else
+                                {
+                                    // Handle invalid employee property value
+                                    monthlyResults[i] = 0; 
+                                    // Or log an error
+                                }
+                        }
+                                int col =64;
+                                for (int i = 0; i<12; i++){
+                                worksheet.Cells[existingRow, col++].Value = monthlyResults[i].ToString();
+                                
+                                } 
 
                     }
                     else
@@ -229,8 +243,8 @@ namespace EmployeeData.Pages.Registration
             catch (Exception ex)
             {
                 // Log and display error
-                Console.WriteLine($"Error: {ex.Message}");
-                ModelState.AddModelError("", "An error occurred while processing the request.");
+                ModelState.AddModelError("",$"An error occurred while processing the request.{ex.Message}");
+                ViewData["ErrorMessage"]= $"An error occurred while processing the request.{ex.Message}";
                 LoadDropdownOptions(); // Reload dropdowns
                 return Page();
             }
@@ -258,8 +272,8 @@ namespace EmployeeData.Pages.Registration
             try
             {
                 // Load the Excel file with project codes and PODs
-                using (var package = new ExcelPackage(new FileInfo(employeeFilePath)))
-                {
+                var package = new ExcelPackage(new FileInfo(employeeFilePath));
+                
                     var worksheet = package.Workbook.Worksheets["Dropdown"];
 
                     if (worksheet != null)
@@ -278,13 +292,15 @@ namespace EmployeeData.Pages.Registration
                             }
                         }
                     }
-                }
+                
             }
             catch (Exception ex)
             {
                 // Log the exception for debugging
-                Console.WriteLine($"Error loading ProjectCodeToPODMapping: {ex.Message}");
-                // Handle the exception gracefully (e.g., display an error message to the user)
+                ModelState.AddModelError("",$"Error loading ProjectCodeToPODMapping: {ex.Message}");
+                //  display an error message on frontend
+                ViewData["ErrorMessage"]= $"Error loading ProjectCodeToPODMapping: {ex.Message}";
+
             }
         }
 
@@ -350,7 +366,22 @@ namespace EmployeeData.Pages.Registration
                         var certificate = worksheet.Cells[row, 11]?.Text?.Trim();
                         var visaType = worksheet.Cells[row, 12]?.Text?.Trim();
                         var bulk = worksheet.Cells[row, 13]?.Text?.Trim();
+                 
 
+                            for (int month = 1; month <= 12; month++)
+                            {
+                                var montlyhours = worksheet.Cells[row++, 14]?.Text?.Trim();
+                                if (!string.IsNullOrWhiteSpace(montlyhours))
+                                {
+                                string monthStr = month.ToString("D2"); // Format month as "01", "02", etc.
+                                if (!MonthlyHours.ContainsKey(monthStr))
+                                {
+                                    MonthlyHours.Add(monthStr, ParseDecimal(montlyhours)); 
+                                }
+                            }
+                        }
+                            
+                    
                         if (!string.IsNullOrWhiteSpace(grade))
                         {
                             GradeOptions.Add(new SelectListItem { Value = grade, Text = grade });
@@ -407,11 +438,14 @@ namespace EmployeeData.Pages.Registration
                 else
                 {
                     ModelState.AddModelError("", "Worksheet 'Dropdown' not found in the dropdown file.");
+
+                    ViewData["ErrorMessage"]= $"Worksheet 'Dropdown' not found in the dropdown file.";
                 }
             }
             else
             {
-                ModelState.AddModelError("", $"Dropdown file not found at {employeeFilePath}.");
+                ModelState.AddModelError("", $"Excel file not found at {employeeFilePath}.");
+                ViewData["ErrorMessage"]= "Excel file not found.";
             }
         }
 
@@ -444,6 +478,7 @@ namespace EmployeeData.Pages.Registration
 
         private void AddEmployeeToExcel(ExcelWorksheet worksheet, int row)
         {
+            LoadDropdownOptions();
             // Find last used row
             int lastRow = worksheet.Dimension?.Rows ?? 5; // Adjust default value based on header rows
             for (int i = lastRow; i >= 6; i--) // Start from bottom, excluding header rows
@@ -513,22 +548,38 @@ namespace EmployeeData.Pages.Registration
             worksheet.Cells[row, 45].Value = Employee.October; // Column 45: October
             worksheet.Cells[row, 46].Value = Employee.November; // Column 46: November
             worksheet.Cells[row, 47].Value = Employee.December; // Column 47: December
-
-
-                worksheet.Cells[row, 64].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.January)).ToString();
-                worksheet.Cells[row, 65].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.February)).ToString();
-                worksheet.Cells[row, 66].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.March)).ToString();
-                worksheet.Cells[row, 67].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.April)).ToString();
-                worksheet.Cells[row, 68].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.May)).ToString();
-                worksheet.Cells[row, 69].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.June)).ToString();
-                worksheet.Cells[row, 70].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.July)).ToString();
-                worksheet.Cells[row, 71].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.August)).ToString();
-                worksheet.Cells[row, 72].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.September)).ToString();
-                worksheet.Cells[row, 73].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.October)).ToString();
-                worksheet.Cells[row, 74].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.November)).ToString();
-                worksheet.Cells[row, 75].Value = (Employee.MonthlyPrice * ParseDecimal(Employee.December)).ToString();
-
             
+       
+
+        for (int i = 0; i < months.Length; i++)
+        {
+            string month = months[i];
+            
+            string propertyName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(int.Parse(month));
+
+            // Get property value using reflection
+            decimal employeeValue;
+            if (Decimal.TryParse(Employee.GetType().GetProperty(propertyName)?.GetValue(Employee)?.ToString(), 
+                                NumberStyles.Any, CultureInfo.InvariantCulture, out employeeValue))
+            {
+          
+                monthlyResults[i] = MonthlyHours.GetValueOrDefault(month) * employeeValue;
+            }
+            else
+            {
+                // Handle invalid employee property value
+                monthlyResults[i] = 0; 
+                // Or log an error
+            }
+        }
+            int col =64;
+        for (int i = 0; i<12; i++){
+            worksheet.Cells[row, col++].Value = monthlyResults[i].ToString();
+            
+            }
+
+
+
 
         }
 
@@ -612,7 +663,6 @@ namespace EmployeeData.Pages.Registration
             return employees;
         }
 
-        [HttpGet]
         public IActionResult OnGetProjectName(string projectCode)
         {
             LoadDropdownOptions();
@@ -625,7 +675,6 @@ namespace EmployeeData.Pages.Registration
             return new JsonResult("Project Code not found");
         }
 
-        [HttpGet]
         public IActionResult OnGetGlobalGrade(string grade)
         {
             LoadDropdownOptions();
@@ -636,6 +685,30 @@ namespace EmployeeData.Pages.Registration
                 return new JsonResult(GlobalGrade);
 
             return new JsonResult("Global Grade not found");
+        }
+
+        public IActionResult OnGetMonthlyPrice(decimal cor, string location) 
+        {
+            LoadDropdownOptions();
+            Console.WriteLine(MonthlyHours.Values);
+
+                string monthStr = DateTime.Now.ToString("MM"); 
+            if (location == "offshore") {
+                // Iterate and multiply values
+                foreach (KeyValuePair<string, decimal> entry in MonthlyHours)
+                {
+                    MonthlyHours[entry.Key] = entry.Value  * cor * 9;
+                }
+            }else {
+                // Iterate and multiply values
+                foreach (KeyValuePair<string, decimal> entry in MonthlyHours)
+                {
+                    MonthlyHours[entry.Key] = entry.Value  * cor * 8;
+                }
+            }
+
+            // Pass the monthlyPrice to the view
+            return new JsonResult(MonthlyHours[monthStr]);
         }
 
 

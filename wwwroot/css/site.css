@@ -17,6 +17,11 @@ html {
     height: 100%;
     
 }
+.sidebar{
+    background-color: rgb(28, 98, 162);
+    
+  }
+
 
 
 main{
@@ -24,26 +29,37 @@ main{
     margin: 0;
     padding: 0;
 }
+div .role{
+    background-color:rgb(28, 98, 162);
+}
 .container {
-    max-width: 100%;
-    margin-left: auto;
     
+    max-width: 100%;
+    padding:0;
     border-radius: 5px;
     background-color: #fff; /* White container background */
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.87); /* Subtle shadow */
-    box-sizing: content-box;
-    height: 100%;
+    
+    height: 55%;
    
   }
  #altria{
     position: relative; /* has to be position relative for left to work, or you could just do margin-left: -50px; too */
-    margin-right: -85px
+    margin-right: -4.5%
 
  }
- #capgemini{
+ a #capgemini{
     position: relative; /* has to be position relative for left to work, or you could just do margin-left: -50px; too */
-    margin-left: -10px
+    margin-left: -10px;
 
+ }
+ #home{
+    font-family: Verdana;
+    background-image: url('../Images/Background.png');
+    background-size: cover; /* To cover the entire screen */
+    background-repeat: no-repeat; /* To prevent image repetition */
+    background-position: center; /* To center the image */
+    height: 100%;
  }
 
 .row {
@@ -86,7 +102,11 @@ input:focus, select:focus {
 .date-field {
     color: #333;
 }
-
+.fa-label {
+    font-family: Verdana;
+    font-weight: 900;
+  
+  }
 /* Radio buttons */
 input[type="radio"] {
     margin-right: 5px;
@@ -134,6 +154,14 @@ input[type="radio"] {
 
 .btn-secondary:hover {
     background-color: #45a049;
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+.btn-warning:hover{
+    background-color:rgb(218, 21, 50);
+    transform: scale(1.1); /* Slightly increase size on hover */
+}
+.btn-success:hover{
+    background-color:rgb(21, 218, 96);
     transform: scale(1.1); /* Slightly increase size on hover */
 }
 .alert-warning{
@@ -240,16 +268,18 @@ form .search-form{
     background-color: #45a049;
     transform: scale(1.1); /* Slightly increase size on hover */
 }
-h2{
-    background-color: rgb(28, 98, 162);
-    font-family: Verdana,Bold;
-    font-size: xx-large;
-    margin: auto;
-    color: white;
-    text-align: center;
-    padding-block: 10px;
-   
+h2 {
+    background-color: rgb(28, 98, 162);   /* Keep the background color */
+    font-family: Verdana, sans-serif;       /* Correct font-family */
+    font-weight: bold;                     /* Ensure bold font weight */
+    font-size: xx-large;                   /* Keep the font size */
+    color: white;                          /* Keep the text color white */
+    text-align: center;                    /* Keep the text alignment centered */
+    padding-block: 5px;                    /* Add padding on top and bottom */
+    margin-top: 10px;
+    
 }
+
 .dollar-input-container {
     display: flex;
     align-items: center;
